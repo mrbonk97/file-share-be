@@ -19,7 +19,7 @@ public class Account {
     private String username;
     private String imageUrl;
     @OneToMany
-    private List<File> files;
+    private List<FileData> fileDataList;
     @Enumerated(EnumType.STRING)
     private Provider provider = Provider.local;
     private String providerId;

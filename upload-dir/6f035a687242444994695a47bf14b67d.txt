@@ -1,0 +1,8 @@
+gcloud: 2460340007@gspace.kopo.ac.kr
+office: 2460340007@office.kopo.ac.kr
+
+
+192.168.217.202
+192.168.217.206
+KOPODA
+00:0C:29:59:2A:5C

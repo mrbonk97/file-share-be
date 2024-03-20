@@ -1,4 +1,4 @@
-package org.mrbonk97.fileshareserver.dto.Account.request;
+package org.mrbonk97.fileshareserver.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
