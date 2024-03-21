@@ -13,4 +13,9 @@ public class AuthController {
         return "google";
     }
 
+    @GetMapping
+    public String success() {
+        return "asd";
+    }
+
 }

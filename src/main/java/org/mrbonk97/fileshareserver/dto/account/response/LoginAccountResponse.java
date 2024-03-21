@@ -1,16 +1,19 @@
 package org.mrbonk97.fileshareserver.dto.account.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.mrbonk97.fileshareserver.model.Account;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
+@AllArgsConstructor
 public class LoginAccountResponse {
-    private final String username;
-    private final String imageUrl;
-    private final String accessToken;
-    private final String refreshToken;
+    private String username;
+    private String imageUrl;
+    private String accessToken;
+    private String refreshToken;
 
     public static LoginAccountResponse of(Account account) {
         

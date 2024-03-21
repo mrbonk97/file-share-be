@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.mrbonk97.fileshareserver.exception.StorageException;
 import org.mrbonk97.fileshareserver.model.FileData;
 import org.mrbonk97.fileshareserver.repository.FileDataRepository;
-import org.mrbonk97.fileshareserver.vo.FileDataVO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;

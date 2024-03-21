@@ -11,7 +11,7 @@ import org.mrbonk97.fileshareserver.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/account")
+@RequestMapping("/api/accounts")
 @RestController
 public class AccountController {
     private final AccountService accountService;

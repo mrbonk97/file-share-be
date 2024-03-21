@@ -3,6 +3,8 @@ package org.mrbonk97.fileshareserver.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@SQLDelete(sql = "UPDATE account SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +37,7 @@ public class Account {
     @PrePersist
     void create() {
         this.createdAt = new Date();
+        this.updatedAt = this.createdAt;
     }
 
     @PreUpdate

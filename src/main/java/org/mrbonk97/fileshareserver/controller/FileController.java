@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/file")
+@RequestMapping("/api/files")
 @RequiredArgsConstructor
 @RestController
 public class FileController {
@@ -30,6 +30,11 @@ public class FileController {
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(fileData.getContentType()))
                 .body(fileData.getBytes());
+    }
+
+    @GetMapping
+    public String test() {
+        return "file api test";
     }
 
 
