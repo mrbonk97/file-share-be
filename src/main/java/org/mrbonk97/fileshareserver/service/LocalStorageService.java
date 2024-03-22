@@ -2,6 +2,7 @@ package org.mrbonk97.fileshareserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.mrbonk97.fileshareserver.exception.StorageException;
+import org.mrbonk97.fileshareserver.model.Account;
 import org.mrbonk97.fileshareserver.model.FileData;
 import org.mrbonk97.fileshareserver.repository.FileDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +30,7 @@ public class LocalStorageService implements StorageService{
     private String rootLocation;
 
     @Override
-    public FileData store(MultipartFile multipartFile) {
+    public FileData store(Account account, MultipartFile multipartFile) {
         if(multipartFile.isEmpty()) throw new StorageException("파일이 비어있습니다.");
 
         String originalFilename = multipartFile.getOriginalFilename();
@@ -52,6 +53,7 @@ public class LocalStorageService implements StorageService{
             fileData.setContentType(multipartFile.getContentType());
             fileData.setSize(multipartFile.getSize());
             fileData.setOriginalFileName(multipartFile.getOriginalFilename());
+            fileData.setAccount(account);
             return fileDataRepository.save(fileData);
         }
         catch (IOException e) {
@@ -72,8 +74,9 @@ public class LocalStorageService implements StorageService{
     }
 
     @Override
-    public FileData loadAsResource(String fileName) {
+    public FileData loadAsResource(Account account, String fileName) {
         FileData fileData = fileDataRepository.findById(fileName).orElseThrow(() -> new RuntimeException("asd"));
+        if(!fileData.getAccount().equals(account)) throw new RuntimeException("권한이 없음");
         String filePath = rootLocation + "/" +  fileName;
 
         try{
@@ -84,19 +87,7 @@ public class LocalStorageService implements StorageService{
         } catch (IOException e) {
             System.out.println("파일을 찾을 수 없습니다. " + e.getMessage());
         }
-
-
-
-
-
-
-
-
-
         return null;
-
-
-
 
     }
 

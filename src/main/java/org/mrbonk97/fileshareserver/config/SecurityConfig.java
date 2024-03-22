@@ -7,8 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -22,11 +21,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
+        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//        http.exceptionHandling(e -> e.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("api/auth/**").permitAll()
-                .requestMatchers("api/accounts/**").permitAll()
-                .requestMatchers("api/test/**").permitAll()
-                .requestMatchers("api/files/**").authenticated()
+//                .requestMatchers("api/auth/**").permitAll()
+//                .requestMatchers("api/accounts/**").permitAll()
+//                .requestMatchers("api/test/**").permitAll()
+//                .requestMatchers("api/auth-test/**").authenticated()
+//                .requestMatchers("api/files/**").authenticated()
                 .anyRequest().permitAll()
         );
 

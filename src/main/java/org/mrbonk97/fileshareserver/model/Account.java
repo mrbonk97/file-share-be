@@ -33,6 +33,8 @@ public class Account {
     private Date createdAt;
     private Date updatedAt;
     private Date deletedAt;
+    @Transient
+    private String accessToken;
 
     @PrePersist
     void create() {
