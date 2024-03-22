@@ -1,22 +1,17 @@
 package org.mrbonk97.fileshareserver.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mrbonk97.fileshareserver.model.Account;
 import org.mrbonk97.fileshareserver.repository.AccountRepository;
-import org.mrbonk97.fileshareserver.repository.RefreshTokenRepository;
 import org.mrbonk97.fileshareserver.utils.JwtUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.sql.Ref;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class AccountService {
     private final AccountRepository accountRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtils jwtUtils;
 
@@ -43,13 +38,8 @@ public class AccountService {
         return account;
     }
 
-    public void logoutAccount(String email) {
-        Account account = loadByEmail(email);
-        refreshTokenRepository.deleteByAccount(account);
-    }
-
+    @Transactional
     public void deleteAccount(String email) {
-        Account account = loadByEmail(email);
-        accountRepository.delete(account);
+        accountRepository.delete(loadByEmail(email));
     }
 }

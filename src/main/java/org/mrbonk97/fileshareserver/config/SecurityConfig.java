@@ -24,11 +24,9 @@ public class SecurityConfig {
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 //        http.exceptionHandling(e -> e.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
         http.authorizeHttpRequests(auth -> auth
-//                .requestMatchers("api/auth/**").permitAll()
-//                .requestMatchers("api/accounts/**").permitAll()
-//                .requestMatchers("api/test/**").permitAll()
-//                .requestMatchers("api/auth-test/**").authenticated()
-//                .requestMatchers("api/files/**").authenticated()
+                .requestMatchers("api/auth/**").permitAll()
+                .requestMatchers("api/test/**").permitAll()
+                .requestMatchers("api/files/**").authenticated()
                 .anyRequest().permitAll()
         );
 

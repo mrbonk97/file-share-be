@@ -33,13 +33,12 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        System.out.println(header);
-        Account account = null;
 
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
+        Account account = null;
 
         try {
             final String token = header.split(" ")[1].trim();

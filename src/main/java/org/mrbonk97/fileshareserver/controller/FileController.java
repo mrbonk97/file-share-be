@@ -7,39 +7,59 @@ import org.mrbonk97.fileshareserver.dto.fileData.response.UploadFileResponse;
 import org.mrbonk97.fileshareserver.model.Account;
 import org.mrbonk97.fileshareserver.model.FileData;
 import org.mrbonk97.fileshareserver.service.AccountService;
-import org.mrbonk97.fileshareserver.service.StorageService;
+import org.mrbonk97.fileshareserver.service.DatabaseStorageService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RequestMapping("/api/files")
 @RequiredArgsConstructor
 @RestController
 public class FileController {
-    private final StorageService storageService;
+    private final DatabaseStorageService storageService;
     private final AccountService accountService;
+
     @PostMapping
-    public Response<UploadFileResponse> uploadFile(@ModelAttribute UploadFileRequest uploadFileRequest, Authentication authentication) {
+    public Response<UploadFileResponse> uploadFile(@ModelAttribute UploadFileRequest uploadFileRequest, Authentication authentication) throws IOException {
         String email = authentication.getName();
         Account account = accountService.loadByEmail(email);
-
-        FileData fileData = storageService.store(account, uploadFileRequest.getFile());
+        FileData fileData = storageService.uploadFile(uploadFileRequest.getFile(), account);
         return Response.success(UploadFileResponse.of(fileData));
     }
 
-    @GetMapping("/{filename}")
-    public ResponseEntity<?> serveFile(@PathVariable String filename, Authentication authentication) {
+    @GetMapping("/preview/{filename}")
+    public ResponseEntity<byte[]> preview(@PathVariable String filename, Authentication authentication) {
         String email = authentication.getName();
         Account account = accountService.loadByEmail(email);
+        FileData fileData = storageService.downloadFile(filename, account);
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(fileData.getContentType())).body(fileData.getDecompressedData());
+    }
 
-        FileData fileData = storageService.loadAsResource(account, filename);
-
+    @GetMapping("/{filename}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String filename, Authentication authentication) {
+        String email = authentication.getName();
+        Account account = accountService.loadByEmail(email);
+        FileData fileData = storageService.downloadFile(filename, account);
         return ResponseEntity
                 .status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileData.getOriginalFileName()))
                 .contentType(MediaType.valueOf(fileData.getContentType()))
-                .body(fileData.getBytes());
+                .body(fileData.getDecompressedData());
+    }
+
+    @GetMapping
+    public Response<Page<FileData>> getFiles(Pageable pageable, Authentication authentication) {
+        String email = authentication.getName();
+        Account account = accountService.loadByEmail(email);
+        Page<FileData> page = storageService.getFiles(pageable,account);
+        return Response.success(page);
     }
 
 }
