@@ -3,11 +3,11 @@ package org.mrbonk97.fileshareserver.service;
 import lombok.RequiredArgsConstructor;
 import org.mrbonk97.fileshareserver.model.Account;
 import org.mrbonk97.fileshareserver.model.RefreshToken;
-import org.mrbonk97.fileshareserver.repository.AccountRepository;
 import org.mrbonk97.fileshareserver.repository.RefreshTokenRepository;
 import org.mrbonk97.fileshareserver.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 @RequiredArgsConstructor
@@ -20,15 +20,16 @@ public class RefreshTokenService {
     private Long refreshTokenExpireDate;
 
     public void createRefreshToken(Account account) {
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setAccount(account);
+        RefreshToken refreshToken = refreshTokenRepository.findByAccount(account).orElse(new RefreshToken());
+        if(refreshToken.getAccount() == null) refreshToken.setAccount(account);
         refreshToken.setIssuedDate(new Date());
         refreshToken.setExpireDate(new Date(System.currentTimeMillis() + refreshTokenExpireDate));
         refreshTokenRepository.save(refreshToken);
     }
 
+    @Transactional
     public void deleteRefreshToken(Account account) {
-        refreshTokenRepository.deleteByAccount(account);
+        refreshTokenRepository.deleteAllByAccount(account);
     }
 
     public String refreshAccessToken(Account account) {

@@ -11,17 +11,35 @@ import java.util.Date;
 @Entity
 public class FileData {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String hashedFileName;
     private String originalFileName;
     private String contentType;
     private Long size;
 
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB") // 16mb 까지 저장 가능
+    private byte [] fileData;
+
     @ManyToOne
     private Account account;
-    private Date createdAt;
-    private Date scheduledDeleteDate;
 
     @Transient
-    byte [] bytes;
+    private byte [] decompressedData;
+    private Date createdAt;
+    private Date updatedAt;
+    private Date scheduledDeleteDate;
+
+    @PrePersist
+    void create() {
+        this.createdAt = new Date();
+        this.scheduledDeleteDate = new Date(System.currentTimeMillis() + 604800000L);
+    }
+
+    @PreUpdate
+    void update() {
+        this.updatedAt = new Date();
+    }
+
 
 }

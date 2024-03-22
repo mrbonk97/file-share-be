@@ -25,6 +25,7 @@ public class JwtUtils {
     SecretKey signingKey;
 
     public String generateAccessToken(String email) {
+        System.out.println(email + "을 이용해서 토큰 생성");
         return Jwts
                 .builder()
                 .subject(email)

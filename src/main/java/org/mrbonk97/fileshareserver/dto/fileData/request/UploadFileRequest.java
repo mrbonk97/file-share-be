@@ -7,6 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @RequiredArgsConstructor
 public class UploadFileRequest {
-    private final String title;
     private final MultipartFile file;
 }
