@@ -1,10 +1,11 @@
-package org.mrbonk97.fileshareserver.dto.fileData.response;
+package org.mrbonk97.fileshareserver.dao.fileData.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.mrbonk97.fileshareserver.model.FileData;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
@@ -13,8 +14,8 @@ public class UploadFileResponse {
     private final String originalFilename;
     private final String contentType;
     private final Long size;
-    private final Date createdAt;
-    private final Date scheduledDeleteDate;
+    private final LocalDateTime createdAt;
+    private final LocalDate scheduledDeleteDate;
 
     public static UploadFileResponse of(FileData fileData) {
         return new UploadFileResponse(

@@ -1,4 +1,4 @@
-package org.mrbonk97.fileshareserver.dto;
+package org.mrbonk97.fileshareserver.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

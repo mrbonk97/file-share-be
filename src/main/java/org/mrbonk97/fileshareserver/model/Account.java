@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -18,6 +18,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String email;
     private String password;
     private String username;
@@ -29,22 +30,24 @@ public class Account {
     private String providerId;
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.role_user;
-    private Date emailAuthenticated;
-    private Date createdAt;
-    private Date updatedAt;
-    private Date deletedAt;
+    private LocalDateTime emailAuthenticated;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
     @Transient
     private String accessToken;
+    @Transient
+    private String refreshToken;
 
     @PrePersist
     void create() {
-        this.createdAt = new Date();
+        this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
     }
 
     @PreUpdate
     void update() {
-        this.updatedAt = new Date();
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

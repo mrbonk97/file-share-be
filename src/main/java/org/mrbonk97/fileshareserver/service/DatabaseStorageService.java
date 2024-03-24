@@ -1,6 +1,8 @@
 package org.mrbonk97.fileshareserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.mrbonk97.fileshareserver.exception.ErrorCode;
+import org.mrbonk97.fileshareserver.exception.FileShareApplicationException;
 import org.mrbonk97.fileshareserver.model.Account;
 import org.mrbonk97.fileshareserver.model.FileData;
 import org.mrbonk97.fileshareserver.repository.StorageRepository;
@@ -18,6 +20,10 @@ import java.util.List;
 public class DatabaseStorageService {
     private final StorageRepository storageRepository;
 
+    public FileData loadByFileId(String id) {
+        return storageRepository.findById(id).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FILE_NOT_FOUND));
+    }
+
     public FileData uploadFile(MultipartFile multipartFile, Account account) throws IOException {
         FileData fileData = new FileData();
         fileData.setAccount(account);
@@ -30,37 +36,20 @@ public class DatabaseStorageService {
     }
 
     public FileData downloadFile(String id, Account account) {
-        FileData fileData = storageRepository.findById(id).orElseThrow(() -> new RuntimeException("File not found"));
-        if(!account.equals(fileData.getAccount())) throw new RuntimeException("Not Matched");
+        FileData fileData = loadByFileId(id);
+        if(!account.equals(fileData.getAccount())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         fileData.setDecompressedData(ImageUtils.decompresImage(fileData.getFileData()));
         return fileData;
     }
 
     public void deleteFile(String id, Account account) {
-        FileData fileData = storageRepository.findById(id).orElseThrow(() -> new RuntimeException("File not found"));
-        if(!account.equals(fileData.getAccount())) throw new RuntimeException("Not Matched");
+        FileData fileData = loadByFileId(id);
+        if(!account.equals(fileData.getAccount())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         storageRepository.delete(fileData);
     }
 
-    public Page<FileData> getFiles (Pageable pageable, Account account) {
-        return storageRepository.findByAccountOrderByCreatedAtDesc(account, pageable);
-//        return storageRepository.findByAccountOrderByCreatedAtDesc(account, pageable).map((item) -> {
-//            FileData fileData = new FileData();
-//            fileData.setHashedFileName(item.getHashedFileName());
-//            fileData.setOriginalFileName(item.getOriginalFileName());
-//            fileData.setContentType(item.getContentType());
-//            fileData.setSize(item.getSize());
-//            fileData.setFileData(item.getFileData());
-//            fileData.setCreatedAt(item.getCreatedAt());
-//            fileData.setUpdatedAt(item.getUpdatedAt());
-//            fileData.setScheduledDeleteDate(item.getScheduledDeleteDate());
-//            return fileData;
-//        });
-    }
-
-
     public FileData downloadFile2(String id) {
-        FileData fileData = storageRepository.findById(id).orElseThrow(() -> new RuntimeException("File not found"));
+        FileData fileData = loadByFileId(id);
         fileData.setDecompressedData(ImageUtils.decompresImage(fileData.getFileData()));
         return fileData;
     }

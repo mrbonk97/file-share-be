@@ -1,6 +1,5 @@
 package org.mrbonk97.fileshareserver.oauth2;
 
-import lombok.AllArgsConstructor;
 
 import java.util.Map;
 

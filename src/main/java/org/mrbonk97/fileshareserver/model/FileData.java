@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -26,19 +28,19 @@ public class FileData {
 
     @Transient
     private byte [] decompressedData;
-    private Date createdAt;
-    private Date updatedAt;
-    private Date scheduledDeleteDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDate scheduledDeleteDate;
 
     @PrePersist
     void create() {
-        this.createdAt = new Date();
-        this.scheduledDeleteDate = new Date(System.currentTimeMillis() + 604800000L);
+        this.createdAt = LocalDateTime.now();
+        this.scheduledDeleteDate = LocalDate.now().plusWeeks(1);
     }
 
     @PreUpdate
     void update() {
-        this.updatedAt = new Date();
+        this.updatedAt = LocalDateTime.now();
     }
 
 

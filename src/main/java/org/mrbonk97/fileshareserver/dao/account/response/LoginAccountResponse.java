@@ -1,20 +1,13 @@
-package org.mrbonk97.fileshareserver.dto.account.response;
+package org.mrbonk97.fileshareserver.dao.account.response;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.mrbonk97.fileshareserver.model.Account;
-import org.mrbonk97.fileshareserver.model.FileData;
 import org.mrbonk97.fileshareserver.model.Provider;
 import org.mrbonk97.fileshareserver.model.UserRole;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -28,9 +21,9 @@ public class LoginAccountResponse {
     private Provider provider;
     private String providerId;
     private UserRole userRole;
-    private Date emailAuthenticated;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime emailAuthenticated;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String accessToken;
 
 

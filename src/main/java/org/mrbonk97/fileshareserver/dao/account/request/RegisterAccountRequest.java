@@ -1,14 +1,14 @@
-package org.mrbonk97.fileshareserver.dto.account.request;
+package org.mrbonk97.fileshareserver.dao.account.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
 @AllArgsConstructor
-public class LoginAccountRequest {
+public class RegisterAccountRequest {
     private String email;
     private String password;
+    private String username;
 }

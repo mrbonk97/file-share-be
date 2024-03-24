@@ -22,6 +22,5 @@ public class FileShareApplicationException extends RuntimeException {
         } else {
             return String.format("%s. %s", errorCode.getMessage(), message);
         }
-
     }
 }
