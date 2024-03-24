@@ -1,15 +1,13 @@
 package org.mrbonk97.fileshareserver.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.mrbonk97.fileshareserver.dto.Response;
-import org.mrbonk97.fileshareserver.dto.fileData.request.UploadFileRequest;
-import org.mrbonk97.fileshareserver.dto.fileData.response.UploadFileResponse;
+import org.mrbonk97.fileshareserver.dao.Response;
+import org.mrbonk97.fileshareserver.dao.fileData.request.UploadFileRequest;
+import org.mrbonk97.fileshareserver.dao.fileData.response.UploadFileResponse;
 import org.mrbonk97.fileshareserver.model.Account;
 import org.mrbonk97.fileshareserver.model.FileData;
 import org.mrbonk97.fileshareserver.service.AccountService;
 import org.mrbonk97.fileshareserver.service.DatabaseStorageService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,12 +52,12 @@ public class FileController {
                 .body(fileData.getDecompressedData());
     }
 
-    @GetMapping
-    public Response<Page<FileData>> getFiles(Pageable pageable, Authentication authentication) {
-        String email = authentication.getName();
-        Account account = accountService.loadByEmail(email);
-        Page<FileData> page = storageService.getFiles(pageable,account);
-        return Response.success(page);
-    }
+//    @GetMapping
+//    public Response<Page<FileData>> getFiles(Pageable pageable, Authentication authentication) {
+//        String email = authentication.getName();
+//        Account account = accountService.loadByEmail(email);
+//        Page<FileData> page = storageService.getFiles(pageable,account);
+//        return Response.success(page);
+//    }
 
 }

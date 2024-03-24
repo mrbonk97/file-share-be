@@ -25,7 +25,7 @@ public class SecurityConfig {
 //        http.exceptionHandling(e -> e.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("api/auth/**").permitAll()
-                .requestMatchers("api/test/**").permitAll()
+                .requestMatchers("api/test/**").authenticated()
                 .requestMatchers("api/files/**").authenticated()
                 .anyRequest().permitAll()
         );
