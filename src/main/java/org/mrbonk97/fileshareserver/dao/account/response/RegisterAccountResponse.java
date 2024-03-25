@@ -13,8 +13,9 @@ public class RegisterAccountResponse {
     private String username;
     private String imageUrl;
     private String accessToken;
+    private String refreshToken;
 
     public static RegisterAccountResponse of(Account account) {
-        return new RegisterAccountResponse(account.getEmail(), account.getUsername(), account.getImageUrl(), account.getAccessToken());
+        return new RegisterAccountResponse(account.getEmail(), account.getUsername(), account.getImageUrl(), account.getAccessToken(), account.getRefreshToken());
     }
 }
