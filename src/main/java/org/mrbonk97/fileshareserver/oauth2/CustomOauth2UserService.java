@@ -49,7 +49,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         user.setProviderId(oAuth2UserInfo.getId());
         user.setUsername(oAuth2UserInfo.getName());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
-        user.setProvider(Provider.valueOf(provider));
+        user.setProvider(oAuth2UserInfo.getProvider());
         User savedUser = accountRepository.save(user);
         log.info("새로운 OAuth2 유저 생성 완료: " + user.getEmail() + " " + provider);
         return savedUser;
