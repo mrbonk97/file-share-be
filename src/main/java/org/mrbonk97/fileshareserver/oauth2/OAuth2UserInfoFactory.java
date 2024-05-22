@@ -5,20 +5,16 @@ import org.mrbonk97.fileshareserver.model.Provider;
 import java.util.Map;
 
 public class OAuth2UserInfoFactory {
-    public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
-        if(registrationId.equalsIgnoreCase(Provider.google.toString()))
+    public static OAuth2UserInfo getOAuth2UserInfo(String provider, Map<String, Object> attributes) {
+        if(provider.equalsIgnoreCase(Provider.google.toString())) {
             return new GoogleOAuth2UserInfo(attributes);
+        }
 
-        if(registrationId.equalsIgnoreCase(Provider.kakao.toString()))
-            return new GoogleOAuth2UserInfo(attributes);
+        if(provider.equalsIgnoreCase(Provider.naver.toString())) {
+            return new NaverOAuth2UserInfo(attributes);
+        }
 
-        if(registrationId.equalsIgnoreCase(Provider.naver.toString()))
-            return new GoogleOAuth2UserInfo(attributes);
-        
-        throw new RuntimeException("대충 알수없는 OAuth2 client 정보");
-        
-        // TODO : Naver 및 Kakao OAuth2 구현, 커스텀 에러 메세지 구현
-
+        throw new RuntimeException("해당 Oauth2 방식은 아직 미지원");
     }
 
 

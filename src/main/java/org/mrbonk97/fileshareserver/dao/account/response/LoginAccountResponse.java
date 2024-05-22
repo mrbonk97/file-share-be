@@ -3,7 +3,7 @@ package org.mrbonk97.fileshareserver.dao.account.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.mrbonk97.fileshareserver.model.Account;
+import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.model.Provider;
 import org.mrbonk97.fileshareserver.model.UserRole;
 
@@ -27,19 +27,19 @@ public class LoginAccountResponse {
     private String accessToken;
 
 
-    public static LoginAccountResponse of(Account account) {
+    public static LoginAccountResponse of(User user) {
         return new LoginAccountResponse(
-                account.getId(),
-                account.getEmail(),
-                account.getUsername(),
-                account.getImageUrl(),
-                account.getProvider(),
-                account.getProviderId(),
-                account.getUserRole(),
-                account.getEmailAuthenticated(),
-                account.getCreatedAt(),
-                account.getUpdatedAt(),
-                account.getAccessToken()
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getImageUrl(),
+                user.getProvider(),
+                user.getProviderId(),
+                user.getUserRole(),
+                user.getEmailAuthenticated(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getAccessToken()
         );
 
     }

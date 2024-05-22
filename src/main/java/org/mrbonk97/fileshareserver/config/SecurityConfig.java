@@ -17,18 +17,13 @@ public class SecurityConfig {
     private final CustomOauth2UserService customOauth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final JwtFilter jwtFilter;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
+        http.cors(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
-        http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//        http.exceptionHandling(e -> e.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("api/auth/**").permitAll()
-                .requestMatchers("api/test/**").authenticated()
-                .requestMatchers("api/files/**").authenticated()
-                .anyRequest().permitAll()
-        );
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.oauth2Login(o ->
                 o
@@ -39,6 +34,8 @@ public class SecurityConfig {
         );
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+
         return http.build();
     }
 }

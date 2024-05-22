@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -24,7 +23,7 @@ public class FileData {
     private byte [] fileData;
 
     @ManyToOne
-    private Account account;
+    private User user;
 
     @Transient
     private byte [] decompressedData;
