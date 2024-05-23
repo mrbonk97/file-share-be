@@ -1,1 +1,1 @@
-web: java -jar build/libs/file-share-server-0.0.1-SNAPSHOT.jar
+web: java -jar -Dserver.port=$port $JAVA_OPTS build/libs/file-share-server-0.0.1-SNAPSHOT.jar
