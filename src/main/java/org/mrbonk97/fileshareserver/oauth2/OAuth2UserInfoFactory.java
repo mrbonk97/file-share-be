@@ -14,6 +14,10 @@ public class OAuth2UserInfoFactory {
             return new NaverOAuth2UserInfo(attributes);
         }
 
+        if(provider.equalsIgnoreCase(Provider.kakao.toString())) {
+            return new KakaoOAuth2UserInfo(attributes);
+        }
+
         throw new RuntimeException("해당 Oauth2 방식은 아직 미지원");
     }
 
