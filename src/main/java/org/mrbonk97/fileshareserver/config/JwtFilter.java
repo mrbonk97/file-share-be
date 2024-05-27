@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.exception.ErrorCode;
 import org.mrbonk97.fileshareserver.model.User;
-import org.mrbonk97.fileshareserver.service.AccountService;
+import org.mrbonk97.fileshareserver.service.UserService;
 import org.mrbonk97.fileshareserver.utils.JwtUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private final AccountService accountService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String token = header.split(" ")[1].trim();
             Long id = JwtUtils.validateTokenAndGetId(token);
-            User user = accountService.loadById(id);
+            User user = userService.loadById(id);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user,
                     null,

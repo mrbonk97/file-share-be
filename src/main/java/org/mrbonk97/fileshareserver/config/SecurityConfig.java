@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .successHandler(customOAuth2SuccessHandler)
         );
 
-//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

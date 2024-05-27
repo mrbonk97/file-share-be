@@ -1,63 +1,63 @@
-//package org.mrbonk97.fileshareserver.controller;
-//
-//import lombok.RequiredArgsConstructor;
-//import org.mrbonk97.fileshareserver.dao.Response;
-//import org.mrbonk97.fileshareserver.dao.fileData.request.UploadFileRequest;
-//import org.mrbonk97.fileshareserver.dao.fileData.response.UploadFileResponse;
-//import org.mrbonk97.fileshareserver.model.User;
-//import org.mrbonk97.fileshareserver.model.FileData;
-//import org.mrbonk97.fileshareserver.service.AccountService;
-//import org.mrbonk97.fileshareserver.service.DatabaseStorageService;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.MediaType;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.io.IOException;
-//
-//@RequestMapping("/api/files")
-//@RequiredArgsConstructor
-//@RestController
-//public class FileController {
-//    private final DatabaseStorageService storageService;
-//    private final AccountService accountService;
-//
-//    @PostMapping
-//    public Response<UploadFileResponse> uploadFile(@ModelAttribute UploadFileRequest uploadFileRequest, Authentication authentication) throws IOException {
-//        String email = authentication.getName();
-//        User user = accountService.loadByEmail(email);
-//        FileData fileData = storageService.uploadFile(uploadFileRequest.getFile(), user);
-//        return Response.success(UploadFileResponse.of(fileData));
-//    }
-//
-//    @GetMapping("/preview/{filename}")
-//    public ResponseEntity<byte[]> preview(@PathVariable String filename, Authentication authentication) {
-//        String email = authentication.getName();
-//        User user = accountService.loadByEmail(email);
-//        FileData fileData = storageService.downloadFile(filename, user);
-//        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(fileData.getContentType())).body(fileData.getDecompressedData());
-//    }
-//
-//    @GetMapping("/{filename}")
-//    public ResponseEntity<byte[]> downloadFile(@PathVariable String filename, Authentication authentication) {
-//        String email = authentication.getName();
-//        User user = accountService.loadByEmail(email);
-//        FileData fileData = storageService.downloadFile(filename, user);
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileData.getOriginalFileName()))
-//                .contentType(MediaType.valueOf(fileData.getContentType()))
-//                .body(fileData.getDecompressedData());
-//    }
-//
-////    @GetMapping
-////    public Response<Page<FileData>> getFiles(Pageable pageable, Authentication authentication) {
-////        String email = authentication.getName();
-////        Account account = accountService.loadByEmail(email);
-////        Page<FileData> page = storageService.getFiles(pageable,account);
-////        return Response.success(page);
-////    }
-//
-//}
+package org.mrbonk97.fileshareserver.controller;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.mrbonk97.fileshareserver.controller.response.FileListResponse;
+import org.mrbonk97.fileshareserver.controller.response.UploadFileResponse;
+import org.mrbonk97.fileshareserver.model.User;
+import org.mrbonk97.fileshareserver.model.File;
+import org.mrbonk97.fileshareserver.service.StorageService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+@Slf4j
+@RequestMapping("/api/files")
+@RequiredArgsConstructor
+@RestController
+public class FileController {
+    private final StorageService storageService;
+
+    @PostMapping
+    public ResponseEntity<UploadFileResponse> uploadFile(@RequestParam MultipartFile file, Authentication authentication) throws IOException {
+        User user = (User) authentication.getPrincipal();
+        File file2 = storageService.uploadFile(file, user);
+        log.info("유저: {} 파일 저장. 파일: {}",user.getId(), file2.getHashedFileName());
+        return ResponseEntity.ok().body(UploadFileResponse.of(file2));
+    }
+
+    @GetMapping("/preview/{filename}")
+    public ResponseEntity<byte[]> preview(@PathVariable String filename, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        File file = storageService.downloadFile(filename, user);
+        log.info("유저: {} 파일 미리보기. 파일: {}",user.getId(), file.getHashedFileName());
+        return ResponseEntity.ok().contentType(MediaType.valueOf(file.getContentType())).body(file.getDecompressedData());
+    }
+
+    @GetMapping("/{filename}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String filename, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        File file = storageService.downloadFile(filename, user);
+        log.info("유저: {} 파일 다운로드. 파일: {}",user.getId(), file.getHashedFileName());
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", file.getOriginalFileName()))
+                .contentType(MediaType.valueOf(file.getContentType()))
+                .body(file.getDecompressedData());
+    }
+
+    @GetMapping
+    public ResponseEntity<FileListResponse> getFiles(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        List<File> files = storageService.getFiles(user);
+        log.info("유저: {} 파일 목록 조회",user.getId());
+        return ResponseEntity.ok().body(FileListResponse.of(files));
+    }
+
+}

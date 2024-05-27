@@ -19,18 +19,18 @@ public class JwtUtils {
     static Long refreshTokenExpireTime;
     static SecretKey key;
 
-    public static String generateAccessToken(String id) {
+    public static String generateAccessToken(Long id) {
         return Jwts.builder()
-                .subject(id)
+                .subject(String.valueOf(id))
                 .signWith(key)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpireTime))
                 .compact();
     }
 
-    public static String generateRefreshToken(String id) {
+    public static String generateRefreshToken(Long id) {
         return Jwts.builder()
-                .subject(id)
+                .subject(String.valueOf(id))
                 .signWith(key)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenExpireTime))
@@ -39,7 +39,6 @@ public class JwtUtils {
 
     public static Long validateTokenAndGetId(String jwt) {
         Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
-        System.out.println(claims.getSubject());
         return Long.parseLong(claims.getSubject());
     }
 

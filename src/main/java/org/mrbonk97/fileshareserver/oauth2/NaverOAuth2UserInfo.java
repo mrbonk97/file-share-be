@@ -12,19 +12,19 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo{
     @Override
     String getId() {
         LinkedHashMap<String, String> temp = (LinkedHashMap<String, String>) attributes.get("response");
-        return (String) temp.get("sub");
+        return temp.get("id");
     }
 
     @Override
     String getName() {
         LinkedHashMap<String, String> temp = (LinkedHashMap<String, String>) attributes.get("response");
-        return (String) temp.get("name");
+        return temp.get("name");
     }
 
     @Override
     String getEmail() {
         LinkedHashMap<String, String> temp = (LinkedHashMap<String, String>) attributes.get("response");
-        return (String) temp.get("email");
+        return temp.get("email");
     }
 
     @Override

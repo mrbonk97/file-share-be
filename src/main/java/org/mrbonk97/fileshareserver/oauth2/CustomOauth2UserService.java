@@ -3,8 +3,7 @@ package org.mrbonk97.fileshareserver.oauth2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.model.User;
-import org.mrbonk97.fileshareserver.model.Provider;
-import org.mrbonk97.fileshareserver.repository.AccountRepository;
+import org.mrbonk97.fileshareserver.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -18,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
-    private final AccountRepository accountRepository;
+    private final UserRepository accountRepository;
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -51,7 +50,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
         user.setProvider(oAuth2UserInfo.getProvider());
         User savedUser = accountRepository.save(user);
-        log.info("새로운 OAuth2 유저 생성 완료: " + user.getEmail() + " " + provider);
+        log.info("새로운 OAuth2 유저 생성 완료: " + user.getName() + " " + provider);
         return savedUser;
     }
 
@@ -59,7 +58,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
         existingUser.setUsername(oAuth2UserInfo.getName());
         User savedUser = accountRepository.save(existingUser);
-        log.info("기존의 OAuth2 유저 수정 완료: " + existingUser.getEmail() + " " + existingUser.getProvider().toString());
+        log.info("기존의 OAuth2 유저 수정 완료: " + existingUser.getName() + " " + existingUser.getProvider().toString());
         return savedUser;
     }
 }

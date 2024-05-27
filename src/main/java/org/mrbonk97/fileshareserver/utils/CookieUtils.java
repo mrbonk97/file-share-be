@@ -3,13 +3,12 @@ package org.mrbonk97.fileshareserver.utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseCookie;
-
 import java.util.Optional;
 
 public class CookieUtils {
     final static int TWO_WEEK = 14 * 24 * 60 * 60;
     public static ResponseCookie deleteRefreshToken() {
-        return ResponseCookie.from("refresh_jwt", "")
+        return ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .maxAge(0)
                 .sameSite("Lax")
@@ -22,7 +21,7 @@ public class CookieUtils {
                 .from("refresh_token", jwt)
                 .httpOnly(true)
                 .maxAge(TWO_WEEK)
-                .sameSite("Lax")
+                .path("/")
                 .secure(false) // TODO : after Setting HTTPS, Change to true
                 .build();
 
@@ -38,6 +37,7 @@ public class CookieUtils {
                 }
             }
         }
+
 
         return Optional.empty();
     }

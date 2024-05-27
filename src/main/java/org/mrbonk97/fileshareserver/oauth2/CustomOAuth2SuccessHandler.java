@@ -35,10 +35,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         User user = (User) authentication.getPrincipal();
 
         String accessToken =
-                JwtUtils.generateRefreshToken(String.valueOf(user.getId()));
+                JwtUtils.generateRefreshToken(user.getId());
 
         String refreshToken =
-                JwtUtils.generateAccessToken(String.valueOf(user.getId()));
+                JwtUtils.generateAccessToken(user.getId());
 
 
         ResponseCookie cookie = CookieUtils.generateRefreshToken(refreshToken);
@@ -52,12 +52,14 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .build()
                 .toUriString();
 
+        
+
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = CookieUtils
-                .getCookie(request, "redirect_url")
+                .getCookie(request, "redirect_uri")
                 .map(Cookie::getValue);
 
         // CSRF 공격방지

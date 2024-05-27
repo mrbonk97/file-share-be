@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class FileData {
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String hashedFileName;
@@ -21,6 +21,9 @@ public class FileData {
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB") // 16mb 까지 저장 가능
     private byte [] fileData;
+
+    @ManyToOne
+    Folder folder;
 
     @ManyToOne
     private User user;
@@ -34,6 +37,7 @@ public class FileData {
     @PrePersist
     void create() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.scheduledDeleteDate = LocalDate.now().plusWeeks(1);
     }
 
