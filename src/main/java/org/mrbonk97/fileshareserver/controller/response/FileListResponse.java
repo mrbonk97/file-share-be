@@ -23,6 +23,7 @@ public class FileListResponse {
         private Long size;
         private LocalDateTime updatedAt;
         private String username;
+        private String type;
     }
 
     List<FileResponse> files;
@@ -33,12 +34,13 @@ public class FileListResponse {
 
         for(var e: files2) {
             FileResponse fileResponse = new FileResponse(
-                    e.getHashedFileName(),
+                    e.getId(),
                     e.getOriginalFileName(),
                     e.getContentType(),
                     e.getSize(),
                     e.getUpdatedAt(),
-                    e.getUser().getUsername()
+                    e.getUser().getUsername(),
+                    "FILE"
             );
             files.add(fileResponse);
         }

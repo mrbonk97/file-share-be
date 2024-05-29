@@ -2,6 +2,7 @@ package org.mrbonk97.fileshareserver.controller.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter

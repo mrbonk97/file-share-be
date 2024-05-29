@@ -6,6 +6,8 @@ import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.repository.FolderRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class FolderService {
@@ -31,5 +33,9 @@ public class FolderService {
     public Folder loadById(String folderId) {
         return folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
 
+    }
+
+    public List<Folder> getChildren(String folderId) {
+        return folderRepository.findAllByParentFolderId(folderId);
     }
 }

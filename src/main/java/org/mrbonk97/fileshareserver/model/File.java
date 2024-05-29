@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String hashedFileName;
+    private String id;
     private String originalFileName;
     private String contentType;
     private Long size;

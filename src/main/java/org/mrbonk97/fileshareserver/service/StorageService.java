@@ -18,12 +18,13 @@ import java.util.List;
 @Service
 public class StorageService {
     private final StorageRepository storageRepository;
+    private final FolderService folderService;
 
     public File loadByFileId(String id) {
         return storageRepository.findById(id).orElseThrow(() -> new RuntimeException("으악스"));
     }
 
-    public File uploadFile(MultipartFile multipartFile, User user) throws IOException {
+    public File uploadFile(MultipartFile multipartFile, String folderId, User user) throws IOException {
         File file = new File();
         file.setUser(user);
         file.setContentType(multipartFile.getContentType());
@@ -31,7 +32,12 @@ public class StorageService {
         file.setSize(multipartFile.getSize());
         file.setOriginalFileName(multipartFile.getOriginalFilename());
         file.setContentType(multipartFile.getContentType());
-        System.out.println("파일 업로드 성공인가요? 1");
+
+        if(folderId != null) {
+            Folder folder = folderService.loadById(folderId);
+            file.setFolder(folder);
+        };
+
         return storageRepository.save(file);
     }
 
@@ -54,5 +60,12 @@ public class StorageService {
 
     public List<File> getFilesByFolder(Folder folder) {
         return storageRepository.findAllByFolder(folder);
+    }
+
+    public void changeFolder(String fileId, String folderId) {
+        File file = loadByFileId(fileId);
+        Folder folder = folderService.loadById(folderId);
+        file.setFolder(folder);
+        storageRepository.save(file);
     }
 }

@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 @RequiredArgsConstructor
-public class CreateFolderRequest {
-    private final String title;
+public class ChangeFolderRequest {
+    private final String fileId;
     private final String folderId;
 }
