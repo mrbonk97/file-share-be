@@ -24,6 +24,7 @@ public class FileListResponse {
         private LocalDateTime updatedAt;
         private String username;
         private String type;
+        private String code;
     }
 
     List<FileResponse> files;
@@ -40,7 +41,8 @@ public class FileListResponse {
                     e.getSize(),
                     e.getUpdatedAt(),
                     e.getUser().getUsername(),
-                    "FILE"
+                    "FILE",
+                    e.getCode()
             );
             files.add(fileResponse);
         }

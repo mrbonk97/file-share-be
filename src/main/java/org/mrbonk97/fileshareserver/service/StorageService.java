@@ -84,6 +84,7 @@ public class StorageService {
         UUID uuid = UUID.randomUUID();
         String code = uuid.toString().substring(0,8);
         file.setCode(code);
+        storageRepository.save(file);
         return code;
     }
 }

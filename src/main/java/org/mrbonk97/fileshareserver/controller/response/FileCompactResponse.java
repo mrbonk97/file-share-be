@@ -20,6 +20,7 @@ class FileCompactResponse{
     private LocalDateTime updatedAt;
     private String username;
     private String type;
+    private String code;
 
     public static FileCompactResponse of(File file) {
         return new FileCompactResponse(
@@ -29,7 +30,8 @@ class FileCompactResponse{
                 file.getSize(),
                 file.getUpdatedAt(),
                 file.getUser().getUsername(),
-                "FILE"
+                "FILE",
+                file.getCode()
         );
     }
 }
