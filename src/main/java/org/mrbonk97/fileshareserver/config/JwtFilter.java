@@ -38,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = header.split(" ")[1].trim();
+            log.info("토큰이 들어옴 {}", token);
             Long id = JwtUtils.validateTokenAndGetId(token);
             User user = userService.loadById(id);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -45,6 +46,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     null,
                     user.getAuthorities()
             );
+
+            log.info("유저 아이디: {}", id);
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);

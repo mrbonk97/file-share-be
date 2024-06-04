@@ -2,7 +2,6 @@ package org.mrbonk97.fileshareserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.CreateFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.MoveFolderRequest;
 import org.mrbonk97.fileshareserver.controller.response.FolderResponse;
@@ -28,13 +27,21 @@ public class FolderController {
     @PostMapping
     public void createFolder(@RequestBody CreateFolderRequest createFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        folderService.createFolder(createFolderRequest.getTitle(), createFolderRequest.getFolderId(), user);
+        if(createFolderRequest.getFolderId() == null) {
+            System.out.println("응애~");
+            folderService.createFolder(createFolderRequest.getTitle(), user);
+        }
+        else
+            folderService.createFolder(createFolderRequest.getTitle(), createFolderRequest.getFolderId(), user);
+
+        log.info("사용자 폴더 생성 {} : {}", user.getId(), createFolderRequest.getTitle());
     }
 
-    @DeleteMapping("/{folderId}")
+    @PostMapping("/{folderId}")
     public void deleteFolder(@PathVariable String folderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         folderService.deleteFolder(folderId, user);
+        log.info("사용자 폴더 삭제 {} : {}", user.getId(), folderId);
     }
 
     @GetMapping
@@ -59,7 +66,7 @@ public class FolderController {
     @PutMapping("/move-folder")
     public void changeFolder(@RequestBody MoveFolderRequest moveFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        storageService.changeFolder(moveFolderRequest.getFolderId(), moveFolderRequest.getParentFolderId());
+        folderService.changeFolder(moveFolderRequest.getFolderId(), moveFolderRequest.getParentFolderId(), user);
         log.info("파일의 폴더 변경");
     }
 

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -67,5 +68,22 @@ public class StorageService {
         Folder folder = folderService.loadById(folderId);
         file.setFolder(folder);
         storageRepository.save(file);
+    }
+
+    public List<File> searchFile(String filename) {
+        return null;
+    }
+
+    public String generateCode(String fileId, User user) {
+        File file = loadByFileId(fileId);
+        if(file.getCode() != null)
+            return file.getCode();
+
+        if(!user.equals(file.getUser())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+
+        UUID uuid = UUID.randomUUID();
+        String code = uuid.toString().substring(0,8);
+        file.setCode(code);
+        return code;
     }
 }

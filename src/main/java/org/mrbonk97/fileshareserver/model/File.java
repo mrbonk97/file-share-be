@@ -17,6 +17,7 @@ public class File {
     private String originalFileName;
     private String contentType;
     private Long size;
+    private String code;
 
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB") // 16mb 까지 저장 가능

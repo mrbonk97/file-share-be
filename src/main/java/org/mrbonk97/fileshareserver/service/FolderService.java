@@ -4,38 +4,63 @@ import lombok.RequiredArgsConstructor;
 import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.repository.FolderRepository;
+import org.mrbonk97.fileshareserver.repository.StorageRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
 public class FolderService {
     private final FolderRepository folderRepository;
+    private final StorageRepository storageRepository;
 
-    public void createFolder(String folderName, String parentFolderId, User user) {
+    public void createFolder(String folderName, User user) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setUser(user);
-        if(parentFolderId != null) {
-            Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("부모 폴더를 찾을 수 없음"));
-            folder.setParentFolder(parentFolder);
-        }
         folderRepository.save(folder);
     }
 
+    public void createFolder(String folderName, String parentFolderId, User user) {
+        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없음"));
+
+        Folder folder = new Folder();
+        folder.setFolderName(folderName);
+        folder.setUser(user);
+        folder.setParentFolder(parentFolder);
+
+        folderRepository.save(folder);
+    }
+
+    @Transactional
     public void deleteFolder(String folderId, User user) {
         Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
-        if(folder.getUser() != user) throw new RuntimeException("폴더 삭제 권한이 없습니다.");
+        if(!folder.getUser().equals(user)) throw new RuntimeException("폴더 삭제 권한이 없습니다.");
         folderRepository.delete(folder);
     }
 
     public Folder loadById(String folderId) {
         return folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
-
     }
 
     public List<Folder> getChildren(String folderId) {
         return folderRepository.findAllByParentFolderId(folderId);
+    }
+
+    public void changeFolder(String folderId, String parentFolderId, User user) {
+        if(Objects.equals(folderId, parentFolderId)) return;
+
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
+        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
+
+
+        if(!folder.getUser().equals(user)) throw new RuntimeException("권한 없음");
+        if(!parentFolder.getUser().equals(user)) throw new RuntimeException("권한 없음");
+
+        folder.setParentFolder(parentFolder);
+        folderRepository.save(folder);
     }
 }

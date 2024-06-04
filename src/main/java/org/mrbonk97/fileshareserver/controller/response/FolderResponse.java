@@ -31,5 +31,11 @@ public class FolderResponse {
         return folderResponse;
     }
 
+    public static FolderResponse of(List<File> files) {
+        FolderResponse folderResponse = new FolderResponse();
+        for(var e: files) folderResponse.files.add(FileCompactResponse.of(e));
+        return folderResponse;
+    }
+
 
 }

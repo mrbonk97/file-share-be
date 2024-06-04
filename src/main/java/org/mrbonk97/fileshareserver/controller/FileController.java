@@ -3,13 +3,13 @@ package org.mrbonk97.fileshareserver.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
-import org.mrbonk97.fileshareserver.controller.request.UploadFileRequest;
+import org.mrbonk97.fileshareserver.controller.response.CodeResponse;
 import org.mrbonk97.fileshareserver.controller.response.FileListResponse;
+import org.mrbonk97.fileshareserver.controller.response.FolderResponse;
 import org.mrbonk97.fileshareserver.controller.response.UploadFileResponse;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.service.StorageService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -53,6 +53,13 @@ public class FileController {
                 .body(file.getDecompressedData());
     }
 
+    @DeleteMapping("/{filename}")
+    public void deleteFile(@PathVariable String filename, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        storageService.deleteFile(filename, user);
+        log.info("유저: {} 파일 삭제 요청 파일: {}",user.getId(), filename);
+    }
+
     @GetMapping
     public ResponseEntity<FileListResponse> getFiles(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -66,6 +73,21 @@ public class FileController {
         User user = (User) authentication.getPrincipal();
         storageService.changeFolder(changeFolderRequest.getFileId(), changeFolderRequest.getFolderId());
         log.info("파일의 폴더 변경");
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<FolderResponse> searchFile(@RequestParam String q) {
+        log.info("파일 검색 검색어: {}", q);
+        List<File> files = storageService.searchFile(q);
+        return ResponseEntity.ok().body(FolderResponse.of(files));
+    }
+
+    @GetMapping("/share/{fileId}")
+    public ResponseEntity<CodeResponse> shareFile(@PathVariable String fileId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        String code = storageService.generateCode(fileId, user);
+        log.info("파일 공유 코드 생성 {}",code);
+        return ResponseEntity.ok().body(CodeResponse.of(code));
     }
 
 }
