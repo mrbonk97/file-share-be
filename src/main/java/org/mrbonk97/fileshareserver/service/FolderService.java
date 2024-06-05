@@ -1,6 +1,7 @@
 package org.mrbonk97.fileshareserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.mrbonk97.fileshareserver.dto.FolderDepthDto;
 import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.repository.FolderRepository;
@@ -9,13 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
 public class FolderService {
     private final FolderRepository folderRepository;
-    private final StorageRepository storageRepository;
 
     public void createFolder(String folderName, User user) {
         Folder folder = new Folder();
@@ -62,5 +63,11 @@ public class FolderService {
 
         folder.setParentFolder(parentFolder);
         folderRepository.save(folder);
+    }
+
+
+
+    public List<Map<String,String>> getFolderDepth(String folderId) {
+        return folderRepository.findFolderDepth(folderId);
     }
 }

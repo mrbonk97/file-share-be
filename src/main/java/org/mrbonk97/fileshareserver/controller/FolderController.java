@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -68,6 +69,14 @@ public class FolderController {
         User user = (User) authentication.getPrincipal();
         folderService.changeFolder(moveFolderRequest.getFolderId(), moveFolderRequest.getParentFolderId(), user);
         log.info("파일의 폴더 변경");
+    }
+
+    @GetMapping("/find-depth/{folderId}")
+    public ResponseEntity<List<Map<String, String>>> changeFolder(@PathVariable String folderId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        List<Map<String,String>> folderDepth = folderService.getFolderDepth(folderId);
+        log.info("파일의 depth 확인함");
+        return ResponseEntity.ok().body(folderDepth);
     }
 
 }

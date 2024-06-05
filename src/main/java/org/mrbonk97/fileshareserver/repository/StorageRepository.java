@@ -4,6 +4,7 @@ import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface StorageRepository extends JpaRepository<File, String> {
     void deleteAllByFolder(Folder folder);
 
     List<File> findAllByOriginalFileNameLike(String fileName);
+
+
 
 
 //    with recursive t3(folder_name, id, parent_folder_id) as (
