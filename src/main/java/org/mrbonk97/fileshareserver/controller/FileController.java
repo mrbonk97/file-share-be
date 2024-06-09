@@ -3,10 +3,7 @@ package org.mrbonk97.fileshareserver.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
-import org.mrbonk97.fileshareserver.controller.response.CodeResponse;
-import org.mrbonk97.fileshareserver.controller.response.FileListResponse;
-import org.mrbonk97.fileshareserver.controller.response.FolderResponse;
-import org.mrbonk97.fileshareserver.controller.response.UploadFileResponse;
+import org.mrbonk97.fileshareserver.controller.response.*;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.service.StorageService;
@@ -49,6 +46,8 @@ public class FileController {
         log.info("유저: {} 파일 다운로드. 파일: {}",user.getId(), file.getId());
         return ResponseEntity
                 .ok()
+//                .header("Content-Encoding", "UTF-8")
+//                .header("Content-Disposition", "attachment; filename=worksheet.jpg")
                 .contentType(MediaType.valueOf(file.getContentType()))
                 .body(file.getDecompressedData());
     }
@@ -89,5 +88,31 @@ public class FileController {
         log.info("파일 공유 코드 생성 {}",code);
         return ResponseEntity.ok().body(CodeResponse.of(code));
     }
+
+    @GetMapping("/share-stop/{fileId}")
+    public void stopShareFile(@PathVariable String fileId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        storageService.stopShare(fileId, user);
+        log.info("파일 공유 중지 {}",fileId);
+
+    }
+
+    @GetMapping("/code/{code}")
+    public ResponseEntity<byte[]> downloadFileCode(@PathVariable String code) {
+        File file = storageService.downloadFileCode(code);
+        log.info("파일 다운로드 코드 {}: 파일: {}", code, file.getId());
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.valueOf(file.getContentType()))
+                .body(file.getDecompressedData());
+    }
+
+    @GetMapping("/code-info/{code}")
+    public ResponseEntity<String> getFileInfoCode(@PathVariable String code) {
+        File file = storageService.downloadFileCode(code);
+        log.info("코드 정보 조회 {}", code);
+        return ResponseEntity.ok().body(file.getOriginalFileName());
+    }
+
 
 }

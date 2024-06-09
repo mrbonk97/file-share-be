@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StorageRepository extends JpaRepository<File, String> {
@@ -18,6 +19,8 @@ public interface StorageRepository extends JpaRepository<File, String> {
     void deleteAllByFolder(Folder folder);
 
     List<File> findAllByOriginalFileNameLike(String fileName);
+
+    Optional<File> findByCode(String code);
 
 
 

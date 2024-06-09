@@ -71,14 +71,13 @@ public class StorageService {
     }
 
     public List<File> searchFile(String filename) {
-        return null;
+        return storageRepository.findAllByOriginalFileNameLike("%" + filename + "%");
     }
 
     public String generateCode(String fileId, User user) {
         File file = loadByFileId(fileId);
         if(file.getCode() != null)
             return file.getCode();
-
         if(!user.equals(file.getUser())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
 
         UUID uuid = UUID.randomUUID();
@@ -86,5 +85,18 @@ public class StorageService {
         file.setCode(code);
         storageRepository.save(file);
         return code;
+    }
+
+    public File downloadFileCode(String code) {
+        File file = storageRepository.findByCode(code).orElseThrow(() -> new RuntimeException("코드와 일치하는 파일이 없음"));
+        file.setDecompressedData(ImageUtils.decompresImage(file.getFileData()));
+        return file;
+    }
+
+    public void stopShare(String fileId, User user) {
+        File file = loadByFileId(fileId);
+        if(!user.equals(file.getUser())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+        file.setCode(null);
+        storageRepository.save(file);
     }
 }

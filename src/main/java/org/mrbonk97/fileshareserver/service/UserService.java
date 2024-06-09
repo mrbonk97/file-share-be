@@ -25,4 +25,9 @@ public class UserService {
         accountRepository.delete(user);
     }
 
+    @Transactional
+    public void changeName(String username, User user) {
+        user.setUsername(username);
+        accountRepository.save(user);
+    }
 }

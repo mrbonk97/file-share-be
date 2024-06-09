@@ -2,14 +2,12 @@ package org.mrbonk97.fileshareserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mrbonk97.fileshareserver.controller.request.ChangeUsernameRequest;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,5 +28,12 @@ public class UserController {
         User user = (User) authentication.getPrincipal();
         log.info("유저: {} 회원 탈퇴", user.getId());
         userService.deleteUser(user);
+    }
+
+    @PatchMapping("/me/change-name")
+    public void changeName(@RequestBody ChangeUsernameRequest request, Authentication authentication) {
+        System.out.println(request.getUsername());
+        User user = (User) authentication.getPrincipal();
+        userService.changeName(request.getUsername(), user);
     }
 }
