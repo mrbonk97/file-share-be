@@ -30,6 +30,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     @Value("${oauth2.redirect.uri}")
     private String [] REDIRECT_URIS;
 
+    @Value("${oauth2.redirect.url}")
+    private String REDIRECT_URL;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
@@ -67,7 +70,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             throw new RuntimeException("redirect Uri 적합하지 않음");
         }
 
-        return redirectUri.orElse("http://localhost:3000/oauth2/callback");
+        return redirectUri.orElse(REDIRECT_URL);
     }
 
     private boolean isAuthorizedRedirectUri(String uri) {
