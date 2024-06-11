@@ -43,6 +43,11 @@ public class User implements OAuth2User, UserDetails {
     @Transient
     private String refreshToken;
 
+    @Transient
+    private Long size = 0L;
+    private Long maxSize = 51_200_000L;
+
+
     @PrePersist
     void create() {
         this.createdAt = LocalDateTime.now();

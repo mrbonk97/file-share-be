@@ -16,21 +16,10 @@ public interface StorageRepository extends JpaRepository<File, String> {
 
     List<File> findAllByFolder(Folder folder);
 
-    void deleteAllByFolder(Folder folder);
-
     List<File> findAllByOriginalFileNameLike(String fileName);
 
     Optional<File> findByCode(String code);
 
-
-
-
-//    with recursive t3(folder_name, id, parent_folder_id) as (
-//    select t1.folder_name, t1.id, t1.parent_folder_id from folder as t1 where t1.id = 'adf3a0b6-2752-423b-b54a-c7d68f57e0b6'
-//
-//    union all
-//
-//    select t2.folder_name, t2.id, t2.parent_folder_id from folder as t2 inner join t3 on t2.id = t3.parent_folder_id
-//) select * from t3;
-    
+    @Query("select sum (a.size) from File a where a.user.id = :userId")
+    Long findSumOfSizeByUserId(Long userId);
 }
