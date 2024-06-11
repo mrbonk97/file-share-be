@@ -40,7 +40,11 @@ public class FolderService {
     public void deleteFolder(String folderId, User user) {
         Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
         if(!folder.getUser().equals(user)) throw new RuntimeException("폴더 삭제 권한이 없습니다.");
-        folderRepository.delete(folder);
+        System.out.println("삭제 시작");
+        folderRepository.DeleteFolderRecursive1(folderId);
+        System.out.println("삭제 시작1");
+        folderRepository.DeleteFolderRecursive2(folderId);
+        System.out.println("삭제 시작2");
     }
 
     public Folder loadById(String folderId) {
