@@ -2,6 +2,7 @@ package org.mrbonk97.fileshareserver.repository;
 
 import org.mrbonk97.fileshareserver.dto.FolderDepthDto;
 import org.mrbonk97.fileshareserver.model.Folder;
+import org.mrbonk97.fileshareserver.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -37,6 +38,7 @@ public interface FolderRepository extends JpaRepository<Folder, String> {
             "delete from folder where id in (select id from t3)")
     void DeleteFolderRecursive2(String parentFolderId);
 
+    List<Folder> findAllByUserAndHeart(User user, Boolean heart);
 
 
 

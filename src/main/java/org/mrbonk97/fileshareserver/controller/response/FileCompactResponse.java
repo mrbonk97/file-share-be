@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-class FileCompactResponse{
+public class FileCompactResponse{
     private String id;
     private String originalFileName;
     private String contentType;
@@ -21,6 +21,7 @@ class FileCompactResponse{
     private String username;
     private String type;
     private String code;
+    private Boolean heart;
 
     public static FileCompactResponse of(File file) {
         return new FileCompactResponse(
@@ -31,7 +32,8 @@ class FileCompactResponse{
                 file.getUpdatedAt(),
                 file.getUser().getUsername(),
                 "FILE",
-                file.getCode()
+                file.getCode(),
+                file.getHeart()
         );
     }
 }

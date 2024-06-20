@@ -22,4 +22,6 @@ public interface StorageRepository extends JpaRepository<File, String> {
 
     @Query("select sum (a.size) from File a where a.user.id = :userId")
     Long findSumOfSizeByUserId(Long userId);
+
+    List<File> findAllByUserAndHeart(User user, Boolean heart);
 }

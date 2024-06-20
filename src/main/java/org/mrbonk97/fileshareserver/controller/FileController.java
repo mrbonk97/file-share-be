@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
 import org.mrbonk97.fileshareserver.controller.response.*;
+import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.model.File;
+import org.mrbonk97.fileshareserver.service.FolderService;
 import org.mrbonk97.fileshareserver.service.StorageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.List;
 @RestController
 public class FileController {
     private final StorageService storageService;
+    private final FolderService folderService;
 
     @PostMapping
     public ResponseEntity<UploadFileResponse> uploadFile(@RequestParam MultipartFile file, @RequestParam(required = false) String folderId, Authentication authentication) throws IOException {
@@ -112,6 +115,23 @@ public class FileController {
         File file = storageService.downloadFileCode(code);
         log.info("코드 정보 조회 {}", code);
         return ResponseEntity.ok().body(file.getOriginalFileName());
+    }
+
+    @PatchMapping("/heart/{fileId}")
+    public ResponseEntity<FileCompactResponse> changeHeartState(@PathVariable String fileId) {
+        File file = storageService.updateHeartState(fileId);
+        log.info("파일 하트 변경 {}", fileId);
+        return ResponseEntity.ok().body(FileCompactResponse.of(file));
+
+    }
+
+    @GetMapping("/favorite")
+    public ResponseEntity<FolderResponse> getAllHearts(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        List<File> files = storageService.getAllHeartFiles(user);
+        List<Folder> folders = folderService.getAllHeartFolders(user);
+        log.info("좋아요 표시한 파일 조회 유저: {}", user.getId());
+        return ResponseEntity.ok().body(FolderResponse.of(files, folders));
     }
 
 

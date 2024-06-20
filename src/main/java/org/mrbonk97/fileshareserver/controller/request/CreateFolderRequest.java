@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @RequiredArgsConstructor
 public class CreateFolderRequest {
-    private final String title;
+    private final String folderName;
     private final String folderId;
 }

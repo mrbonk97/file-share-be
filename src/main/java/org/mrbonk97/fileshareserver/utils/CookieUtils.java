@@ -27,6 +27,17 @@ public class CookieUtils {
 
     }
 
+    public static ResponseCookie generateAccessToken(String jwt) {
+        return ResponseCookie
+                .from("access_token", jwt)
+                .httpOnly(false)
+                .maxAge(TWO_WEEK)
+                .path("/")
+                .secure(false) // TODO : after Setting HTTPS, Change to true
+                .build();
+
+    }
+
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
 

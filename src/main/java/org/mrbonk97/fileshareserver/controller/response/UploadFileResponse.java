@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class UploadFileResponse {
-    private final String hashedFileName;
+    private final String id;
     private final String originalFileName;
     private final String contentType;
     private final Long size;
     private final LocalDateTime updatedAt;
     private final String username;
+    private final Boolean heart;
+    private final String type = "FILE";
 
     public static UploadFileResponse of(File file) {
         return new UploadFileResponse(
@@ -23,7 +25,8 @@ public class UploadFileResponse {
                 file.getContentType(),
                 file.getSize(),
                 file.getUpdatedAt(),
-                file.getUser().getName()
+                file.getUser().getName(),
+                file.getHeart()
         );
     }
 }

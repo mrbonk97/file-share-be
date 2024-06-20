@@ -31,9 +31,10 @@ public class UserController {
     }
 
     @PatchMapping("/me/change-name")
-    public void changeName(@RequestBody ChangeUsernameRequest request, Authentication authentication) {
+    public ResponseEntity<User> changeName(@RequestBody ChangeUsernameRequest request, Authentication authentication) {
         System.out.println(request.getUsername());
         User user = (User) authentication.getPrincipal();
         userService.changeName(request.getUsername(), user);
+        return ResponseEntity.ok().body(user);
     }
 }

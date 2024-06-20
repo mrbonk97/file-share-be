@@ -23,6 +23,8 @@ public class Folder {
     @ManyToOne
     User user;
 
+    private Boolean heart = false;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

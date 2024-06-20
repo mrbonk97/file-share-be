@@ -9,6 +9,7 @@ import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.repository.StorageRepository;
 import org.mrbonk97.fileshareserver.utils.ImageUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -98,5 +99,17 @@ public class StorageService {
         if(!user.equals(file.getUser())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         file.setCode(null);
         storageRepository.save(file);
+    }
+
+
+    @Transactional
+    public File updateHeartState(String fileId) {
+        File file = loadByFileId(fileId);
+        file.setHeart(!file.getHeart());
+        return storageRepository.save(file);
+    }
+
+    public List<File> getAllHeartFiles(User user) {
+        return storageRepository.findAllByUserAndHeart(user, true);
     }
 }

@@ -1,11 +1,9 @@
 package org.mrbonk97.fileshareserver.service;
 
 import lombok.RequiredArgsConstructor;
-import org.mrbonk97.fileshareserver.dto.FolderDepthDto;
 import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.repository.FolderRepository;
-import org.mrbonk97.fileshareserver.repository.StorageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,14 +16,14 @@ import java.util.Objects;
 public class FolderService {
     private final FolderRepository folderRepository;
 
-    public void createFolder(String folderName, User user) {
+    public Folder createFolder(String folderName, User user) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setUser(user);
-        folderRepository.save(folder);
+        return folderRepository.save(folder);
     }
 
-    public void createFolder(String folderName, String parentFolderId, User user) {
+    public Folder createFolder(String folderName, String parentFolderId, User user) {
         Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없음"));
 
         Folder folder = new Folder();
@@ -33,7 +31,7 @@ public class FolderService {
         folder.setUser(user);
         folder.setParentFolder(parentFolder);
 
-        folderRepository.save(folder);
+        return folderRepository.save(folder);
     }
 
     @Transactional
@@ -73,5 +71,9 @@ public class FolderService {
 
     public List<Map<String,String>> getFolderDepth(String folderId) {
         return folderRepository.findFolderDepth(folderId);
+    }
+
+    public List<Folder> getAllHeartFolders(User user) {
+        return folderRepository.findAllByUserAndHeart(user, true);
     }
 }

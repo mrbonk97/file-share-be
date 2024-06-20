@@ -10,14 +10,18 @@ import org.mrbonk97.fileshareserver.model.Folder;
 @AllArgsConstructor
 public class FolderCompactResponse {
     private String id;
-    private String folderName;
+    private String originalFileName;
     private String username;
+    private Boolean heart = false;
+    private String type = "FOLDER";
 
     public static FolderCompactResponse of(Folder folder) {
         return new FolderCompactResponse(
                 folder.getId(),
                 folder.getFolderName(),
-                folder.getUser().getName()
+                folder.getUser().getName(),
+                folder.getHeart(),
+                "FOLDER"
         );
 
     }

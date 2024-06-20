@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.controller.request.CreateFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.MoveFolderRequest;
+import org.mrbonk97.fileshareserver.controller.response.FolderCompactResponse;
 import org.mrbonk97.fileshareserver.controller.response.FolderResponse;
 import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.model.Folder;
@@ -26,19 +27,22 @@ public class FolderController {
     private final StorageService storageService;
 
     @PostMapping
-    public void createFolder(@RequestBody CreateFolderRequest createFolderRequest, Authentication authentication) {
+    public ResponseEntity<FolderCompactResponse> createFolder(@RequestBody CreateFolderRequest createFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        Folder folder = null;
         if(createFolderRequest.getFolderId() == null) {
-            System.out.println("응애~");
-            folderService.createFolder(createFolderRequest.getTitle(), user);
+            folder = folderService.createFolder(createFolderRequest.getFolderName(), user);
         }
         else
-            folderService.createFolder(createFolderRequest.getTitle(), createFolderRequest.getFolderId(), user);
+            folder = folderService.createFolder(createFolderRequest.getFolderName(), createFolderRequest.getFolderId(), user);
 
-        log.info("사용자 폴더 생성 {} : {}", user.getId(), createFolderRequest.getTitle());
+        log.info("사용자 폴더 생성 {} : {}", user.getId(), createFolderRequest.getFolderName());
+        return ResponseEntity.ok().body(FolderCompactResponse.of(folder));
+
+
     }
 
-    @PostMapping("/{folderId}")
+    @DeleteMapping("/{folderId}")
     public void deleteFolder(@PathVariable String folderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         folderService.deleteFolder(folderId, user);
@@ -51,6 +55,7 @@ public class FolderController {
         List<File> files = storageService.getFilesByFolder(null);
         List<Folder> folders = folderService.getChildren(null);
         log.info("최상위 폴더 조회");
+        System.out.println(files.size() + " " + folders.size());
         return ResponseEntity.ok().body(FolderResponse.of(files, folders));
     }
 
@@ -72,11 +77,13 @@ public class FolderController {
     }
 
     @GetMapping("/find-depth/{folderId}")
-    public ResponseEntity<List<Map<String, String>>> changeFolder(@PathVariable String folderId, Authentication authentication) {
+    public ResponseEntity<List<Map<String, String>>> getBreadCrumb(@PathVariable String folderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         List<Map<String,String>> folderDepth = folderService.getFolderDepth(folderId);
         log.info("파일의 depth 확인함");
         return ResponseEntity.ok().body(folderDepth);
     }
+
+
 
 }
