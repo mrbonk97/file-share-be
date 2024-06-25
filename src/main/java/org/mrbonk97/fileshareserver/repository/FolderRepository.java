@@ -31,15 +31,21 @@ public interface FolderRepository extends JpaRepository<Folder, String> {
     void DeleteFolderRecursive1(String parentFolderId);
 
     @Modifying
-    @Query(nativeQuery = true, value = "with recursive t3(folder_name, id, parent_folder_id) as (\n" +
-            "select t1.folder_name, t1.id, t1.parent_folder_id from folder as t1 where t1.id = :parentFolderId  \n" +
-            "\tunion all\n" +
-            "select t2.folder_name, t2.id, t2.parent_folder_id from folder as t2 inner join t3 on t2.parent_folder_id = t3.id)\n" +
-            "delete from folder where id in (select id from t3)")
+    @Query(nativeQuery = true, value = "" +
+            "with recursive t3(folder_name, id, parent_folder_id) as " +
+            "(" +
+            " select t1.folder_name, t1.id, t1.parent_folder_id from folder as t1 where t1.id = :parentFolderId " +
+            " union all" +
+            " select t2.folder_name, t2.id, t2.parent_folder_id from folder as t2 inner join t3 on t2.parent_folder_id = t3.id" +
+            ") " +
+            " delete from folder where id in (select id from t3) ")
     void DeleteFolderRecursive2(String parentFolderId);
 
     List<Folder> findAllByUserAndHeart(User user, Boolean heart);
 
+    List<Folder> findAllByUserAndParentFolderIsNull(User user);
+
 
 
 }
+

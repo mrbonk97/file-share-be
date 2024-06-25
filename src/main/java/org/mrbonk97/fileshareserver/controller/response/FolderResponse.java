@@ -25,6 +25,7 @@ public class FolderResponse {
             fileCompactResponse.setOriginalFileName(e.getFolderName());
             fileCompactResponse.setUsername(e.getUser().getUsername());
             fileCompactResponse.setType("FOLDER");
+            fileCompactResponse.setHeart(e.getHeart());
             folderResponse.files.add(fileCompactResponse);
         }
 

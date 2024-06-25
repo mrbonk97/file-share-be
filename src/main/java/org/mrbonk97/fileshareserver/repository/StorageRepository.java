@@ -24,4 +24,8 @@ public interface StorageRepository extends JpaRepository<File, String> {
     Long findSumOfSizeByUserId(Long userId);
 
     List<File> findAllByUserAndHeart(User user, Boolean heart);
+
+    List<File> findAllByUserAndCodeIsNotNull(User user);
+
+    List<File> findAllByUserAndFolderIsNull(User user);
 }

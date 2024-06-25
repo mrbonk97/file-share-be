@@ -38,6 +38,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = header.split(" ")[1].trim();
+            if(token.equals("null")) {
+                log.info("토큰이 없는 요청");
+                filterChain.doFilter(request, response);
+                return;
+            }
+            token = token.trim();
             log.info("토큰이 들어옴 {}", token);
             Long id = JwtUtils.validateTokenAndGetId(token);
             User user = userService.loadById(id);

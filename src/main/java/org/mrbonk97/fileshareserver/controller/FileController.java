@@ -71,10 +71,11 @@ public class FileController {
     }
 
     @PutMapping("/change-folder")
-    public void changeFolder(@RequestBody ChangeFolderRequest changeFolderRequest, Authentication authentication) {
+    public ResponseEntity<FileCompactResponse> changeFolder(@RequestBody ChangeFolderRequest changeFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        storageService.changeFolder(changeFolderRequest.getFileId(), changeFolderRequest.getFolderId());
+        File file = storageService.changeFolder(changeFolderRequest.getFileId(), changeFolderRequest.getFolderId());
         log.info("파일의 폴더 변경");
+        return ResponseEntity.ok().body(FileCompactResponse.of(file));
     }
 
     @GetMapping("/search")
@@ -122,7 +123,6 @@ public class FileController {
         File file = storageService.updateHeartState(fileId);
         log.info("파일 하트 변경 {}", fileId);
         return ResponseEntity.ok().body(FileCompactResponse.of(file));
-
     }
 
     @GetMapping("/favorite")
@@ -132,6 +132,15 @@ public class FileController {
         List<Folder> folders = folderService.getAllHeartFolders(user);
         log.info("좋아요 표시한 파일 조회 유저: {}", user.getId());
         return ResponseEntity.ok().body(FolderResponse.of(files, folders));
+    }
+
+    @GetMapping("/share")
+    public ResponseEntity<FolderResponse> getSharFiles(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        List<File> files = storageService.getAllShareFiles(user);
+        log.info("공유 파일리스트 조회: {}", user.getId());
+        for (var e: files) System.out.printf(e.getOriginalFileName());
+        return ResponseEntity.ok().body(FolderResponse.of(files));
     }
 
 

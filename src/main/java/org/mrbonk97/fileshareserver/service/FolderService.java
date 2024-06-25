@@ -38,11 +38,8 @@ public class FolderService {
     public void deleteFolder(String folderId, User user) {
         Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
         if(!folder.getUser().equals(user)) throw new RuntimeException("폴더 삭제 권한이 없습니다.");
-        System.out.println("삭제 시작");
         folderRepository.DeleteFolderRecursive1(folderId);
-        System.out.println("삭제 시작1");
         folderRepository.DeleteFolderRecursive2(folderId);
-        System.out.println("삭제 시작2");
     }
 
     public Folder loadById(String folderId) {
@@ -53,8 +50,12 @@ public class FolderService {
         return folderRepository.findAllByParentFolderId(folderId);
     }
 
-    public void changeFolder(String folderId, String parentFolderId, User user) {
-        if(Objects.equals(folderId, parentFolderId)) return;
+    public List<Folder> getAllFoldersInHome(User user) {
+        return folderRepository.findAllByUserAndParentFolderIsNull(user);
+    }
+
+    public Folder changeFolder(String folderId, String parentFolderId, User user) {
+        if(Objects.equals(folderId, parentFolderId)) return null;
 
         Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
         Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
@@ -64,7 +65,7 @@ public class FolderService {
         if(!parentFolder.getUser().equals(user)) throw new RuntimeException("권한 없음");
 
         folder.setParentFolder(parentFolder);
-        folderRepository.save(folder);
+        return folderRepository.save(folder);
     }
 
 
@@ -75,5 +76,11 @@ public class FolderService {
 
     public List<Folder> getAllHeartFolders(User user) {
         return folderRepository.findAllByUserAndHeart(user, true);
+    }
+
+    public Folder updateHeartState(String folderId) {
+        Folder folder = loadById(folderId);
+        folder.setHeart(!folder.getHeart());
+        return folderRepository.save(folder);
     }
 }

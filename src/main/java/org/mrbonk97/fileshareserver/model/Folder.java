@@ -18,8 +18,6 @@ public class Folder {
     private String folderName;
     @ManyToOne
     private Folder parentFolder;
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Folder> childFolder = new ArrayList<>();
     @ManyToOne
     User user;
 

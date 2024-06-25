@@ -11,7 +11,7 @@ public class CookieUtils {
         return ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .maxAge(0)
-                .sameSite("Lax")
+                .path("/")
                 .secure(false)
                 .build();
     }

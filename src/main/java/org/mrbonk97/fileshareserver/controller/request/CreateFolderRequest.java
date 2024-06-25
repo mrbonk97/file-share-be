@@ -9,5 +9,5 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class CreateFolderRequest {
     private final String folderName;
-    private final String folderId;
+    private final String parentFolderId;
 }

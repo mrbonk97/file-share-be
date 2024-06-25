@@ -47,18 +47,12 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         ResponseCookie cookie = CookieUtils.generateRefreshToken(refreshToken);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        ResponseCookie accessTokenCookie = CookieUtils.generateAccessToken(accessToken);
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-
         String targetUri = determineTargetUrl(request, response, authentication);
-
 
         String uri = UriComponentsBuilder.fromUriString(targetUri)
                 .queryParam("access_token", encodeUtf8(accessToken))
                 .build()
                 .toUriString();
-
-        
 
         getRedirectStrategy().sendRedirect(request, response, uri);
     }

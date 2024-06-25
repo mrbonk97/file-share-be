@@ -3,6 +3,7 @@ package org.mrbonk97.fileshareserver.controller.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.model.Folder;
 
 @Getter
@@ -12,7 +13,7 @@ public class FolderCompactResponse {
     private String id;
     private String originalFileName;
     private String username;
-    private Boolean heart = false;
+    private Boolean heart;
     private String type = "FOLDER";
 
     public static FolderCompactResponse of(Folder folder) {

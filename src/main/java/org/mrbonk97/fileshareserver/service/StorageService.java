@@ -60,15 +60,19 @@ public class StorageService {
         return storageRepository.findAllByUser(user);
     }
 
+    public List<File> getFilesInHome(User user) {
+        return storageRepository.findAllByUserAndFolderIsNull(user);
+    }
+
     public List<File> getFilesByFolder(Folder folder) {
         return storageRepository.findAllByFolder(folder);
     }
 
-    public void changeFolder(String fileId, String folderId) {
+    public File changeFolder(String fileId, String folderId) {
         File file = loadByFileId(fileId);
         Folder folder = folderService.loadById(folderId);
         file.setFolder(folder);
-        storageRepository.save(file);
+        return storageRepository.save(file);
     }
 
     public List<File> searchFile(String filename) {
@@ -111,5 +115,9 @@ public class StorageService {
 
     public List<File> getAllHeartFiles(User user) {
         return storageRepository.findAllByUserAndHeart(user, true);
+    }
+
+    public List<File> getAllShareFiles(User user) {
+        return storageRepository.findAllByUserAndCodeIsNotNull(user);
     }
 }
