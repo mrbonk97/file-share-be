@@ -5,6 +5,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
+import org.mrbonk97.fileshareserver.exception.ErrorCode;
+import org.mrbonk97.fileshareserver.exception.FileShareApplicationException;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.utils.CookieUtils;
 import org.mrbonk97.fileshareserver.utils.JwtUtils;
@@ -64,7 +66,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         // CSRF 공격방지
         if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
-            throw new RuntimeException("redirect Uri 적합하지 않음");
+            throw new FileShareApplicationException(ErrorCode.URL_NOT_FOUND);
         }
 
         return redirectUri.orElse(REDIRECT_URL);

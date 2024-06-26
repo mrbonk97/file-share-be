@@ -1,6 +1,8 @@
 package org.mrbonk97.fileshareserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.mrbonk97.fileshareserver.exception.ErrorCode;
+import org.mrbonk97.fileshareserver.exception.FileShareApplicationException;
 import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.repository.FolderRepository;
@@ -24,7 +26,7 @@ public class FolderService {
     }
 
     public Folder createFolder(String folderName, String parentFolderId, User user) {
-        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없음"));
+        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
 
         Folder folder = new Folder();
         folder.setFolderName(folderName);
@@ -36,14 +38,14 @@ public class FolderService {
 
     @Transactional
     public void deleteFolder(String folderId, User user) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
-        if(!folder.getUser().equals(user)) throw new RuntimeException("폴더 삭제 권한이 없습니다.");
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
+        if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         folderRepository.DeleteFolderRecursive1(folderId);
         folderRepository.DeleteFolderRecursive2(folderId);
     }
 
     public Folder loadById(String folderId) {
-        return folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
+        return folderRepository.findById(folderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
     }
 
     public List<Folder> getChildren(String folderId) {
@@ -57,12 +59,12 @@ public class FolderService {
     public Folder changeFolder(String folderId, String parentFolderId, User user) {
         if(Objects.equals(folderId, parentFolderId)) return null;
 
-        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
-        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new RuntimeException("폴더를 찾을 수 없습니다."));
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
+        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
 
 
-        if(!folder.getUser().equals(user)) throw new RuntimeException("권한 없음");
-        if(!parentFolder.getUser().equals(user)) throw new RuntimeException("권한 없음");
+        if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+        if(!parentFolder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
 
         folder.setParentFolder(parentFolder);
         return folderRepository.save(folder);
@@ -82,5 +84,9 @@ public class FolderService {
         Folder folder = loadById(folderId);
         folder.setHeart(!folder.getHeart());
         return folderRepository.save(folder);
+    }
+
+    public List<Folder> searchFile(User user, String q) {
+        return folderRepository.findAllByUserAndFolderNameContainingIgnoreCase(user, q);
     }
 }

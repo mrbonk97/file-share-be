@@ -16,7 +16,9 @@ public interface StorageRepository extends JpaRepository<File, String> {
 
     List<File> findAllByFolder(Folder folder);
 
-    List<File> findAllByOriginalFileNameLike(String fileName);
+//    List<File> findAllByUserAndOriginalFileNameLikeIgnoreCase(User user, String fileName);
+    List<File> findAllByUserAndOriginalFileNameContainingIgnoreCase(User user, String fileName);
+
 
     Optional<File> findByCode(String code);
 

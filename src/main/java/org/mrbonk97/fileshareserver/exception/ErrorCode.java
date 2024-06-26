@@ -12,11 +12,13 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.FORBIDDEN, "Expired Token"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not found"),
+    FOLDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Folder not found"),
+    URL_NOT_FOUND(HttpStatus.NOT_FOUND, "Url not found"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid password"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "Email Duplicated"),
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "User Invalid Permission"),
+    INVALID_OAUTH_PROVIDER(HttpStatus.UNAUTHORIZED, "Invalid Oauth2 Provider"),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Database error occurs");
-
     private final HttpStatus httpStatus;
     private final String message;
 }

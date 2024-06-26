@@ -73,16 +73,18 @@ public class FileController {
     @PutMapping("/change-folder")
     public ResponseEntity<FileCompactResponse> changeFolder(@RequestBody ChangeFolderRequest changeFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        File file = storageService.changeFolder(changeFolderRequest.getFileId(), changeFolderRequest.getFolderId());
+        File file = storageService.changeFolder(user, changeFolderRequest.getFileId(), changeFolderRequest.getFolderId());
         log.info("파일의 폴더 변경");
         return ResponseEntity.ok().body(FileCompactResponse.of(file));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<FolderResponse> searchFile(@RequestParam String q) {
+    public ResponseEntity<FolderResponse> searchFile(@RequestParam String q, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         log.info("파일 검색 검색어: {}", q);
-        List<File> files = storageService.searchFile(q);
-        return ResponseEntity.ok().body(FolderResponse.of(files));
+        List<File> files = storageService.searchFile(user, q);
+        List<Folder> folders = folderService.searchFile(user, q);
+        return ResponseEntity.ok().body(FolderResponse.of(files, folders));
     }
 
     @GetMapping("/share/{fileId}")
@@ -119,8 +121,9 @@ public class FileController {
     }
 
     @PatchMapping("/heart/{fileId}")
-    public ResponseEntity<FileCompactResponse> changeHeartState(@PathVariable String fileId) {
-        File file = storageService.updateHeartState(fileId);
+    public ResponseEntity<FileCompactResponse> changeHeartState(@PathVariable String fileId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        File file = storageService.updateHeartState(user, fileId);
         log.info("파일 하트 변경 {}", fileId);
         return ResponseEntity.ok().body(FileCompactResponse.of(file));
     }

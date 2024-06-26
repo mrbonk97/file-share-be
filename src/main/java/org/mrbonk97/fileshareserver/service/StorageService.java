@@ -23,7 +23,7 @@ public class StorageService {
     private final FolderService folderService;
 
     public File loadByFileId(String id) {
-        return storageRepository.findById(id).orElseThrow(() -> new RuntimeException("으악스"));
+        return storageRepository.findById(id).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FILE_NOT_FOUND));
     }
 
     public File uploadFile(MultipartFile multipartFile, String folderId, User user) throws IOException {
@@ -68,15 +68,17 @@ public class StorageService {
         return storageRepository.findAllByFolder(folder);
     }
 
-    public File changeFolder(String fileId, String folderId) {
+    public File changeFolder(User user, String fileId, String folderId) {
         File file = loadByFileId(fileId);
         Folder folder = folderService.loadById(folderId);
+        if(!file.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+        if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         file.setFolder(folder);
         return storageRepository.save(file);
     }
 
-    public List<File> searchFile(String filename) {
-        return storageRepository.findAllByOriginalFileNameLike("%" + filename + "%");
+    public List<File> searchFile(User user, String filename) {
+        return storageRepository.findAllByUserAndOriginalFileNameContainingIgnoreCase(user,  filename);
     }
 
     public String generateCode(String fileId, User user) {
@@ -93,7 +95,7 @@ public class StorageService {
     }
 
     public File downloadFileCode(String code) {
-        File file = storageRepository.findByCode(code).orElseThrow(() -> new RuntimeException("코드와 일치하는 파일이 없음"));
+        File file = storageRepository.findByCode(code).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FILE_NOT_FOUND));
         file.setDecompressedData(ImageUtils.decompresImage(file.getFileData()));
         return file;
     }
@@ -107,8 +109,9 @@ public class StorageService {
 
 
     @Transactional
-    public File updateHeartState(String fileId) {
+    public File updateHeartState(User user, String fileId) {
         File file = loadByFileId(fileId);
+        if(!user.equals(file.getUser())) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         file.setHeart(!file.getHeart());
         return storageRepository.save(file);
     }

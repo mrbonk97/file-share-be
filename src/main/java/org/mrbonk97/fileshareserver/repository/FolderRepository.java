@@ -45,6 +45,8 @@ public interface FolderRepository extends JpaRepository<Folder, String> {
 
     List<Folder> findAllByUserAndParentFolderIsNull(User user);
 
+    List<Folder> findAllByUserAndFolderNameContainingIgnoreCase(User user, String folderName);
+
 
 
 }

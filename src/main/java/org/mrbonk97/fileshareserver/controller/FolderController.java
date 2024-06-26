@@ -30,7 +30,7 @@ public class FolderController {
     public ResponseEntity<FolderCompactResponse> createFolder(@RequestBody CreateFolderRequest createFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Folder folder = null;
-        if(createFolderRequest.getParentFolderId() == null) {
+        if(createFolderRequest.getParentFolderId() == null || createFolderRequest.getParentFolderId().isEmpty()) {
             folder = folderService.createFolder(createFolderRequest.getFolderName(), user);
         }
         else

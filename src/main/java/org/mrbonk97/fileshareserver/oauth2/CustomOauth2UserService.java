@@ -2,6 +2,8 @@ package org.mrbonk97.fileshareserver.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mrbonk97.fileshareserver.exception.ErrorCode;
+import org.mrbonk97.fileshareserver.exception.FileShareApplicationException;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -34,7 +36,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             user = createOAuth2Account(oAuth2UserInfo, registrationId);
 
         else if(!optionalAccount.get().getProvider().toString().equalsIgnoreCase(registrationId))
-            throw new RuntimeException("다른 OAUTH2 방식으로 회원가입 되어있음.");
+            throw new FileShareApplicationException(ErrorCode.INVALID_OAUTH_PROVIDER);
 
         else
             user = updateOAuth2Account(optionalAccount.get(), oAuth2UserInfo);

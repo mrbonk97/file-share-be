@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @RequiredArgsConstructor
 @Configuration
@@ -24,7 +26,14 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(new AntPathRequestMatcher("/api/folders/**")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/files/**")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/files/code/*")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/token/**")).permitAll()
+        );
+//        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
         http.oauth2Login(o ->
                 o
