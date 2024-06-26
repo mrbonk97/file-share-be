@@ -14,6 +14,7 @@ public enum ErrorCode {
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not found"),
     FOLDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Folder not found"),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND, "Url not found"),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"Refresh token is empty" ),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid password"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "Email Duplicated"),
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "User Invalid Permission"),

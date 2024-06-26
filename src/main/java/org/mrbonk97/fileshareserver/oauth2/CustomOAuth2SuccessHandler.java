@@ -40,10 +40,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         User user = (User) authentication.getPrincipal();
 
         String accessToken =
-                JwtUtils.generateRefreshToken(user.getId());
+                JwtUtils.generateAccessToken(user.getId());
 
         String refreshToken =
-                JwtUtils.generateAccessToken(user.getId());
+                JwtUtils.generateRefreshToken(user.getId());
 
 
         ResponseCookie cookie = CookieUtils.generateRefreshToken(refreshToken);

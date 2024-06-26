@@ -26,15 +26,7 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(new AntPathRequestMatcher("/api/folders/**")).authenticated()
-                .requestMatchers(new AntPathRequestMatcher("/api/files/**")).authenticated()
-                .requestMatchers(new AntPathRequestMatcher("/api/files/code/*")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/test/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/token/**")).permitAll()
-        );
-//        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-
+        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         http.oauth2Login(o ->
                 o
                         .authorizationEndpoint(point -> point.baseUri("/oauth2/authorization"))
