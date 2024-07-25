@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class FolderDepthDto {
-    private final String folderName;
-    private final String folderId;
+public class JwtDto {
+    private final String accessToken;
+    private final String refreshToken;
 }

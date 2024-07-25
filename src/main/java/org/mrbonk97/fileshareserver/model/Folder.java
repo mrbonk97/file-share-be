@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -16,12 +15,22 @@ public class Folder {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String folderName;
-    @ManyToOne
-    private Folder parentFolder;
-    @ManyToOne
-    User user;
-
     private Boolean heart = false;
+    @ManyToOne private Folder parentFolder;
+    @ManyToOne private User user;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    void create() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void update() {
+        updatedAt = LocalDateTime.now();
+    }
 
     @Override
     public boolean equals(Object o) {

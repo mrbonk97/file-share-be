@@ -3,6 +3,7 @@ package org.mrbonk97.fileshareserver.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.controller.request.ChangeUsernameRequest;
+import org.mrbonk97.fileshareserver.controller.response.Response;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.service.UserService;
 import org.mrbonk97.fileshareserver.utils.CookieUtils;
@@ -20,24 +21,27 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<User> getUserInfo(Authentication authentication) {
+    public Response<User> getUserInfo(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        log.info("유저: {} 자신 정보 조회", user.getId());
-        return ResponseEntity.ok().body(user);
+        log.info("유저: {} 유저 정보 조회", user.getId());
+
+        return Response.success(user);
     }
 
     @DeleteMapping("/me")
-    public void deleteUser(Authentication authentication) {
+    public Response<String> deleteUser(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         log.info("유저: {} 회원 탈퇴", user.getId());
+
         userService.deleteUser(user);
+        return Response.success("유저 계정 삭제 완료: " + user.getId());
     }
 
     @PatchMapping("/me/change-name")
-    public ResponseEntity<User> changeName(@RequestBody ChangeUsernameRequest request, Authentication authentication) {
+    public Response<User> changeName(@RequestBody ChangeUsernameRequest request, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        userService.changeName(request.getUsername(), user);
-        return ResponseEntity.ok().body(user);
+        User changedUser = userService.changeName(request.getUsername(), user);
+        return Response.success(changedUser);
     }
 
     @GetMapping("/me/sign-out")

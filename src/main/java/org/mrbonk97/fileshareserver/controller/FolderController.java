@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mrbonk97.fileshareserver.controller.request.CreateFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.MoveFolderRequest;
-import org.mrbonk97.fileshareserver.controller.response.FolderCompactResponse;
-import org.mrbonk97.fileshareserver.controller.response.FolderResponse;
+import org.mrbonk97.fileshareserver.controller.response.FileFolderResponse;
+import org.mrbonk97.fileshareserver.controller.response.Response;
+import org.mrbonk97.fileshareserver.dto.FolderCompactDto;
 import org.mrbonk97.fileshareserver.model.File;
 import org.mrbonk97.fileshareserver.model.Folder;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.service.FolderService;
-import org.mrbonk97.fileshareserver.service.StorageService;
-import org.springframework.http.ResponseEntity;
+import org.mrbonk97.fileshareserver.service.FileService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,73 +24,83 @@ import java.util.Map;
 @RestController
 public class FolderController {
     private final FolderService folderService;
-    private final StorageService storageService;
+    private final FileService fileService;
 
     @PostMapping
-    public ResponseEntity<FolderCompactResponse> createFolder(@RequestBody CreateFolderRequest createFolderRequest, Authentication authentication) {
+    public Response<FolderCompactDto> createFolder(@RequestBody CreateFolderRequest createFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Folder folder = null;
-        if(createFolderRequest.getParentFolderId() == null || createFolderRequest.getParentFolderId().isEmpty()) {
-            folder = folderService.createFolder(createFolderRequest.getFolderName(), user);
-        }
-        else
-            folder = folderService.createFolder(createFolderRequest.getFolderName(), createFolderRequest.getParentFolderId(), user);
+        Folder createdFolder = folderService.createFolder(
+                createFolderRequest.getFolderName(),
+                createFolderRequest.getParentFolderId(),
+                user);
 
-        log.info("사용자 폴더 생성 {} : {}", user.getId(), createFolderRequest.getFolderName());
-        return ResponseEntity.ok().body(FolderCompactResponse.of(folder));
-
-
+        log.info("유저: {} 폴더 생성: {}", user.getId(), createdFolder.getId());
+        return Response.success(FolderCompactDto.of(createdFolder));
     }
 
     @DeleteMapping("/{folderId}")
-    public void deleteFolder(@PathVariable String folderId, Authentication authentication) {
+    public Response<String> deleteFolder(@PathVariable String folderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        log.info("유저: {} 폴더 삭제: {}", user.getId(), folderId);
+
         folderService.deleteFolder(folderId, user);
-        log.info("사용자 폴더 삭제 {} : {}", user.getId(), folderId);
+        return Response.success("폴더 삭제 완료: " + folderId);
     }
 
     @GetMapping
-    public ResponseEntity<FolderResponse> getFilesInFolder(Authentication authentication) {
+    public Response<FileFolderResponse> getFilesInFolder(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        List<File> files = storageService.getFilesInHome(user);
+        log.info("유저: {} 최상위 폴더 조회", user.getId());
+
+        List<File> files = fileService.getFilesInHome(user);
         List<Folder> folders = folderService.getAllFoldersInHome(user);
-        log.info("최상위 폴더 조회");
-        return ResponseEntity.ok().body(FolderResponse.of(files, folders));
+        return Response.success(FileFolderResponse.of(files, folders));
     }
 
     @GetMapping("/{folderId}")
-    public ResponseEntity<FolderResponse> getFilesInFolder(@PathVariable String folderId, Authentication authentication) {
+    public Response<FileFolderResponse> getFilesInFolder(@PathVariable String folderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        log.info("유저: {} 폴더 조회: {}",user.getId(), folderId);
+
         Folder folder = folderService.loadById(folderId);
-        List<File> files = storageService.getFilesByFolder(folder);
-        List<Folder> folders = folderService.getChildren(folderId);
-        log.info("폴더 {} 내부 데이터 조회", folderId);
-        return ResponseEntity.ok().body(FolderResponse.of(files, folders));
+        List<File> files = fileService.getFilesByFolder(folder);
+        List<Folder> folders = folderService.getAllChildrenFoldersById(folderId);
+
+        return Response.success(FileFolderResponse.of(files, folders));
     }
 
     @PutMapping("/move-folder")
-    public ResponseEntity<FolderCompactResponse> changeFolder(@RequestBody MoveFolderRequest moveFolderRequest, Authentication authentication) {
+    public Response<FolderCompactDto> changeFolder(@RequestBody MoveFolderRequest moveFolderRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Folder folder = folderService.changeFolder(moveFolderRequest.getFolderId(), moveFolderRequest.getParentFolderId(), user);
-        log.info("파일의 폴더 변경");
-        return ResponseEntity.ok().body(FolderCompactResponse.of(folder));
+        log.info("유저: {} 폴더 위치 변경 {} -> {}",
+                user.getId(),
+                moveFolderRequest.getFolderId(),
+                moveFolderRequest.getParentFolderId());
+
+        Folder folder = folderService.changeFolder(
+                moveFolderRequest.getFolderId(),
+                moveFolderRequest.getParentFolderId(),
+                user);
+
+        return Response.success(FolderCompactDto.of(folder));
     }
 
     @GetMapping("/find-depth/{folderId}")
-    public ResponseEntity<List<Map<String, String>>> getBreadCrumb(@PathVariable String folderId, Authentication authentication) {
+    public Response<List<Map<String, String>>> getBreadCrumb(@PathVariable String folderId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+        log.info("유저: {} 폴더 depth 조회: {}", user.getId(), folderId);
+
         List<Map<String,String>> folderDepth = folderService.getFolderDepth(folderId);
-        log.info("파일의 depth 확인함");
-        return ResponseEntity.ok().body(folderDepth);
+        return Response.success(folderDepth);
     }
 
     @PatchMapping("/heart/{folderId}")
-    public ResponseEntity<FolderCompactResponse> changeHeartState(@PathVariable String folderId) {
-        Folder folder = folderService.updateHeartState(folderId);
-        log.info("폴더 하트 변경 {}", folderId);
-        return ResponseEntity.ok().body(FolderCompactResponse.of(folder));
+    public Response<FolderCompactDto> changeHeartState(@PathVariable String folderId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        log.info("유저: {} 폴더 하트 변경 {}",user.getId(), folderId);
+
+        Folder folder = folderService.updateHeartState(folderId, user);
+        return Response.success(FolderCompactDto.of(folder));
     }
-
-
 
 }

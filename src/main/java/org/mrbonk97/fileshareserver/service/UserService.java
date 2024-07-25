@@ -32,8 +32,8 @@ public class UserService {
     }
 
     @Transactional
-    public void changeName(String username, User user) {
+    public User changeName(String username, User user) {
         user.setUsername(username);
-        accountRepository.save(user);
+        return accountRepository.save(user);
     }
 }

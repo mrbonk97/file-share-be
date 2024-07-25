@@ -18,20 +18,20 @@ import java.util.Objects;
 public class FolderService {
     private final FolderRepository folderRepository;
 
-    public Folder createFolder(String folderName, User user) {
-        Folder folder = new Folder();
-        folder.setFolderName(folderName);
-        folder.setUser(user);
-        return folderRepository.save(folder);
+    public Folder loadById(String folderId) {
+        return folderRepository.findById(folderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
     }
 
     public Folder createFolder(String folderName, String parentFolderId, User user) {
-        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
-
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setUser(user);
-        folder.setParentFolder(parentFolder);
+
+        if(parentFolderId != null) {
+            Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() ->
+                    new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
+            folder.setParentFolder(parentFolder);
+        }
 
         return folderRepository.save(folder);
     }
@@ -39,16 +39,14 @@ public class FolderService {
     @Transactional
     public void deleteFolder(String folderId, User user) {
         Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
-        if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+        if(!folder.getUser().equals(user))
+            throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+
         folderRepository.DeleteFolderRecursive1(folderId);
         folderRepository.DeleteFolderRecursive2(folderId);
     }
 
-    public Folder loadById(String folderId) {
-        return folderRepository.findById(folderId).orElseThrow(() -> new FileShareApplicationException(ErrorCode.FOLDER_NOT_FOUND));
-    }
-
-    public List<Folder> getChildren(String folderId) {
+    public List<Folder> getAllChildrenFoldersById(String folderId) {
         return folderRepository.findAllByParentFolderId(folderId);
     }
 
@@ -80,8 +78,10 @@ public class FolderService {
         return folderRepository.findAllByUserAndHeart(user, true);
     }
 
-    public Folder updateHeartState(String folderId) {
+    public Folder updateHeartState(String folderId, User user) {
         Folder folder = loadById(folderId);
+        if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+
         folder.setHeart(!folder.getHeart());
         return folderRepository.save(folder);
     }
