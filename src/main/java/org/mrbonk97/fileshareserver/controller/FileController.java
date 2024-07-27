@@ -71,11 +71,11 @@ public class FileController {
         return Response.success(files);
     }
 
-    @PutMapping("/change-folder")
-    public Response<FileCompactDto> changeFolder(@RequestBody ChangeFolderRequest changeFolderRequest, Authentication authentication) {
+    @PutMapping("/{id}/move")
+    public Response<FileCompactDto> changeFolder(@RequestBody ChangeFolderRequest changeFolderRequest, Authentication authentication, @PathVariable String id) {
         User user = (User) authentication.getPrincipal();
-        File file = fileService.changeFolder(user, changeFolderRequest.getFileId(), changeFolderRequest.getFolderId());
-        log.info("파일의 폴더 변경");
+        log.info("유저: {} 파일 폴더 변경 파일:{} 폴더:{}", user.getId(), id, changeFolderRequest.getFolderId());
+        File file = fileService.changeFolder(user, id, changeFolderRequest.getFolderId());
         return Response.success(FileCompactDto.of(file));
     }
 
@@ -89,11 +89,11 @@ public class FileController {
     }
 
     @GetMapping("/share/{fileId}")
-    public ResponseEntity<FileCompactDto> shareFile(@PathVariable String fileId, Authentication authentication) {
+    public Response<FileCompactDto> shareFile(@PathVariable String fileId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         File file = fileService.generateCode(fileId, user);
         log.info("파일 공유 코드 생성 {}",file.getCode());
-        return ResponseEntity.ok().body(FileCompactDto.of(file));
+        return Response.success(FileCompactDto.of(file));
     }
 
     @GetMapping("/share-stop/{fileId}")

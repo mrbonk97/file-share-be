@@ -69,17 +69,18 @@ public class FolderController {
         return Response.success(FileFolderResponse.of(files, folders));
     }
 
-    @PutMapping("/move-folder")
-    public Response<FolderCompactDto> changeFolder(@RequestBody MoveFolderRequest moveFolderRequest, Authentication authentication) {
+    @PutMapping("/{folderId}/move")
+    public Response<FolderCompactDto> changeFolder(@RequestBody MoveFolderRequest moveFolderRequest, Authentication authentication, @PathVariable String folderId) {
+        System.out.println(folderId);
         User user = (User) authentication.getPrincipal();
         log.info("유저: {} 폴더 위치 변경 {} -> {}",
                 user.getId(),
-                moveFolderRequest.getFolderId(),
-                moveFolderRequest.getParentFolderId());
+                folderId,
+                moveFolderRequest.parentFolderId());
 
         Folder folder = folderService.changeFolder(
-                moveFolderRequest.getFolderId(),
-                moveFolderRequest.getParentFolderId(),
+                folderId,
+                moveFolderRequest.parentFolderId(),
                 user);
 
         return Response.success(FolderCompactDto.of(folder));
