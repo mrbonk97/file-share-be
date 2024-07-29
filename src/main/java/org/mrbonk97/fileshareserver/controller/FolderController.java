@@ -2,6 +2,8 @@ package org.mrbonk97.fileshareserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
+import org.mrbonk97.fileshareserver.controller.request.ChangeFoldernameRequest;
 import org.mrbonk97.fileshareserver.controller.request.CreateFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.MoveFolderRequest;
 import org.mrbonk97.fileshareserver.controller.response.FileFolderResponse;
@@ -45,6 +47,14 @@ public class FolderController {
 
         folderService.deleteFolder(folderId, user);
         return Response.success("폴더 삭제 완료: " + folderId);
+    }
+
+    @PatchMapping("/{folderId}")
+    public Response<Folder> changeFolderName(@PathVariable String folderId, @RequestBody ChangeFoldernameRequest changeFoldernameRequest, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Folder folder = folderService.changeFolderName(folderId, changeFoldernameRequest.folderName(), user);
+        log.info("유저: {} 파일: {}  이름 변경: {}",user.getId(), folderId, changeFoldernameRequest.folderName());
+        return Response.success(folder);
     }
 
     @GetMapping

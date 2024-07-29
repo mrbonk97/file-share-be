@@ -2,6 +2,7 @@ package org.mrbonk97.fileshareserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mrbonk97.fileshareserver.controller.request.ChangeFilenameRequest;
 import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
 import org.mrbonk97.fileshareserver.controller.response.FileFolderResponse;
 import org.mrbonk97.fileshareserver.controller.response.Response;
@@ -35,31 +36,36 @@ public class FileController {
         return Response.success(FileCompactDto.of(uploadedFile));
     }
 
-    @GetMapping("/preview/{filename}")
-    public ResponseEntity<byte[]> preview(@PathVariable String filename, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        File file = fileService.downloadFile(filename, user);
-        log.info("유저: {} 파일 미리보기. 파일: {}",user.getId(), file.getId());
-        return ResponseEntity.ok().contentType(MediaType.valueOf(file.getContentType())).body(file.getFileData());
-    }
+//    @GetMapping("/preview/{filename}")
+//    public ResponseEntity<byte[]> preview(@PathVariable String filename, Authentication authentication) {
+//        User user = (User) authentication.getPrincipal();
+//        File file = fileService.getFile(filename, user);
+//        log.info("유저: {} 파일 미리보기. 파일: {}",user.getId(), file.getId());
+//        return ResponseEntity.ok().contentType(MediaType.valueOf(file.getContentType())).body(file.getFileData());
+//    }
 
     @GetMapping("/{filename}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String filename, Authentication authentication) {
+    public Response<File> downloadFile(@PathVariable String filename, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        File file = fileService.downloadFile(filename, user);
+        File file = fileService.getFile(filename, user);
         log.info("유저: {} 파일 다운로드. 파일: {}",user.getId(), file.getId());
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.valueOf(file.getContentType()))
-                .body(file.getFileData());
+        return Response.success(file);
     }
 
-    @DeleteMapping("/{filename}")
-    public Response<String> deleteFile(@PathVariable String filename, Authentication authentication) {
+    @DeleteMapping("/{fileId}")
+    public Response<String> deleteFile(@PathVariable String fileId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        fileService.deleteFile(filename, user);
-        log.info("유저: {} 파일 삭제 요청 파일: {}",user.getId(), filename);
-        return Response.success("파일 삭제 성공: " + filename);
+        fileService.deleteFile(fileId, user);
+        log.info("유저: {} 파일 삭제 요청 파일: {}",user.getId(), fileId);
+        return Response.success("파일 삭제 성공: " + fileId);
+    }
+
+    @PatchMapping("/{fileId}")
+    public Response<File> changeFileName(@PathVariable String fileId, @RequestBody ChangeFilenameRequest changeFilenameRequest, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        File file = fileService.changeFileName(fileId, changeFilenameRequest.fileName(), user);
+        log.info("유저: {} 파일: {}  이름 변경: {}",user.getId(), fileId, changeFilenameRequest.fileName());
+        return Response.success(file);
     }
 
     @GetMapping
@@ -105,13 +111,10 @@ public class FileController {
     }
 
     @GetMapping("/code/{code}")
-    public ResponseEntity<byte[]> downloadFileCode(@PathVariable String code) {
+    public Response<File> downloadFileCode(@PathVariable String code) {
         File file = fileService.getFileByCode(code);
         log.info("파일 다운로드 코드 {}: 파일: {}", code, file.getId());
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.valueOf(file.getContentType()))
-                .body(file.getFileData());
+        return Response.success(file);
     }
 
     @GetMapping("/code-info/{code}")

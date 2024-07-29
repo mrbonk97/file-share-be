@@ -1,9 +1,9 @@
 package org.mrbonk97.fileshareserver.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,7 +24,7 @@ public class User implements OAuth2User, UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
-    @JsonIgnore
+    @JsonIgnoreProperties
     private String password;
     private String username;
     private String imageUrl;
@@ -40,11 +40,11 @@ public class User implements OAuth2User, UserDetails {
     @Transient
     private String accessToken;
     @Transient
-    private String refreshToken;
+    private String refreshToken;    
 
     @Transient
-    private Long size = 0L;
-    private Long maxSize = 51_200_000L;
+    private Long memoryUsage = 0L;
+    private Long maxMemory = 51_200_000L;
 
 
     @PrePersist

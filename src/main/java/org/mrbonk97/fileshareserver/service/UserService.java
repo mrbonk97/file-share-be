@@ -21,9 +21,9 @@ public class UserService {
 
     public User loadById(Long id) {
         User user = accountRepository.findById(id).orElseThrow(() -> new FileShareApplicationException(ErrorCode.USER_NOT_FOUND));
-        user.setSize(storageRepository.findSumOfSizeByUserId(id));
+        user.setMemoryUsage(storageRepository.findSumOfSizeByUserId(id));
         // 파일이 없을 경우 0
-        if(user.getSize() == null) user.setSize(0L);
+        if(user.getMemoryUsage() == null) user.setMemoryUsage(0L);
         return user;
     }
     @Transactional

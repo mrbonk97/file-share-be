@@ -44,7 +44,7 @@ public class FileService {
         return storageRepository.save(file);
     }
 
-    public File downloadFile(String id, User user) {
+    public File getFile(String id, User user) {
         File file = loadByFileId(id);
         if(!user.equals(file.getUser()))
             throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
@@ -127,5 +127,12 @@ public class FileService {
 
     public List<File> getAllShareFiles(User user) {
         return storageRepository.findAllByUserAndCodeIsNotNull(user);
+    }
+
+    public File changeFileName(String fileId, String fileName, User user) {
+        File file = loadByFileId(fileId);
+        if(!file.getUser().equals(user))throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+        file.setOriginalFileName(fileName);
+        return storageRepository.save(file);
     }
 }
