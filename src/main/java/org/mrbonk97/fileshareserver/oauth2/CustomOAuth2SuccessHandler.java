@@ -28,10 +28,6 @@ import java.util.Optional;
 @Setter
 @Component
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
-    @Value("${oauth2.redirect.uri}")
-    private String [] REDIRECT_URIS;
-
     @Value("${oauth2.redirect.url}")
     private String REDIRECT_URL;
 
@@ -64,24 +60,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .getCookie(request, "redirect_uri")
                 .map(Cookie::getValue);
 
-        // CSRF 공격방지
-        if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
-            throw new FileShareApplicationException(ErrorCode.URL_NOT_FOUND);
-        }
-
         return redirectUri.orElse(REDIRECT_URL);
-    }
-
-    private boolean isAuthorizedRedirectUri(String uri) {
-        URI clientRedirectUri = URI.create(uri);
-
-        return Arrays.stream(REDIRECT_URIS).anyMatch(
-                e -> {
-                    URI validRedirectUri = URI.create(e);
-                    return validRedirectUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                            && validRedirectUri.getPort() == clientRedirectUri.getPort();
-                }
-        );
     }
 
     private static String encodeUtf8(String val) {
