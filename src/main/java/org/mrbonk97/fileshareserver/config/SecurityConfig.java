@@ -29,9 +29,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         http.oauth2Login(o ->
                 o
-                        .authorizationEndpoint(point -> point.baseUri("/oauth2/authorization"))
+                        .authorizationEndpoint(point -> point.baseUri("/api/oauth2/authorization"))
                         .userInfoEndpoint(point -> point.userService(customOauth2UserService))
-                        .redirectionEndpoint(point -> point.baseUri("/oauth2/callback/*"))
+                        .redirectionEndpoint(point -> point.baseUri("/api/oauth2/callback/*"))
                         .successHandler(customOAuth2SuccessHandler)
         );
 
