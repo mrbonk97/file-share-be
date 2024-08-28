@@ -2,7 +2,6 @@ package org.mrbonk97.fileshareserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mrbonk97.fileshareserver.controller.request.ChangeFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.ChangeFoldernameRequest;
 import org.mrbonk97.fileshareserver.controller.request.CreateFolderRequest;
 import org.mrbonk97.fileshareserver.controller.request.MoveFolderRequest;
@@ -81,7 +80,6 @@ public class FolderController {
 
     @PutMapping("/{folderId}/move")
     public Response<FolderCompactDto> changeFolder(@RequestBody MoveFolderRequest moveFolderRequest, Authentication authentication, @PathVariable String folderId) {
-        System.out.println(folderId);
         User user = (User) authentication.getPrincipal();
         log.info("유저: {} 폴더 위치 변경 {} -> {}",
                 user.getId(),

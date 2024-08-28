@@ -28,6 +28,8 @@ public class UserService {
     }
     @Transactional
     public void deleteUser(User user) {
+        // 테스트 계정은 삭제 할 수 없게 막음
+        if(user.getId() == 1L) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         accountRepository.delete(user);
     }
 

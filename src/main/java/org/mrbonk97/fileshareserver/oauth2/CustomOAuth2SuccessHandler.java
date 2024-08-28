@@ -5,8 +5,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
-import org.mrbonk97.fileshareserver.exception.ErrorCode;
-import org.mrbonk97.fileshareserver.exception.FileShareApplicationException;
 import org.mrbonk97.fileshareserver.model.User;
 import org.mrbonk97.fileshareserver.utils.CookieUtils;
 import org.mrbonk97.fileshareserver.utils.JwtUtils;
@@ -19,10 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Setter
@@ -51,6 +47,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .queryParam("access_token", encodeUtf8(accessToken))
                 .build()
                 .toUriString();
+
 
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
