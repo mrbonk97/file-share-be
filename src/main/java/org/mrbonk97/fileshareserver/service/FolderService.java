@@ -79,7 +79,10 @@ public class FolderService {
     }
 
     public Folder updateHeartState(String folderId, User user) {
-        return null;
+        Folder folder = loadById(folderId);
+        if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
+        folder.setHeart(!folder.getHeart());
+        return folderRepository.save(folder);
     }
 
     public List<Folder> searchFile(User user, String q) {
@@ -88,6 +91,7 @@ public class FolderService {
 
     public Folder changeFolderName(String folderId, String folderName, User user) {
         Folder folder = loadById(folderId);
+
         if(!folder.getUser().equals(user)) throw new FileShareApplicationException(ErrorCode.INVALID_PERMISSION);
         folder.setFolderName(folderName);
         return folderRepository.save(folder);
